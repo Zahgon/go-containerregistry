@@ -16,7 +16,6 @@ package crane
 
 import (
 	"context"
-	"crypto/tls"
 	"net/http"
 
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -44,39 +43,14 @@ type Options struct {
 // platform, based on the passed Option. Generally, you shouldn't need to use
 // this unless you've painted yourself into a dependency corner as we have
 // with the crane and gcrane cli packages.
-func GetOptions(opts ...Option) Options {
-	return makeOptions(opts...)
-}
+func GetOptions(opts ...Option) Options { _ = "STUB: not implemented"; return *new(Options) }
 
-func makeOptions(opts ...Option) Options {
-	opt := Options{
-		Remote: []remote.Option{
-			remote.WithAuthFromKeychain(authn.DefaultKeychain),
-		},
-		Keychain: authn.DefaultKeychain,
-		jobs:     4,
-		ctx:      context.Background(),
-	}
+func makeOptions(opts ...Option) Options { _ = "STUB: not implemented"; return *new(Options) }
 
-	for _, o := range opts {
-		o(&opt)
-	}
+// Allow for untrusted certificates if the user
+// passed Insecure but no custom transport.
 
-	// Allow for untrusted certificates if the user
-	// passed Insecure but no custom transport.
-	if opt.insecure && opt.Transport == nil {
-		transport := remote.DefaultTransport.(*http.Transport).Clone()
-		transport.TLSClientConfig = &tls.Config{
-			InsecureSkipVerify: true, //nolint: gosec
-		}
-
-		WithTransport(transport)(&opt)
-	} else if opt.Transport == nil {
-		opt.Transport = remote.DefaultTransport
-	}
-
-	return opt
-}
+//nolint: gosec
 
 // Option is a functional option for crane.
 type Option func(*Options)
@@ -84,30 +58,15 @@ type Option func(*Options)
 // WithTransport is a functional option for overriding the default transport
 // for remote operations. Setting a transport will override the Insecure option's
 // configuration allowing for image registries to use untrusted certificates.
-func WithTransport(t http.RoundTripper) Option {
-	return func(o *Options) {
-		o.Remote = append(o.Remote, remote.WithTransport(t))
-		o.Transport = t
-	}
-}
+func WithTransport(t http.RoundTripper) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // Insecure is an Option that allows image references to be fetched without TLS.
 // This will also allow for untrusted (e.g. self-signed) certificates in cases where
 // the default transport is used (i.e. when WithTransport is not used).
-func Insecure(o *Options) {
-	o.Name = append(o.Name, name.Insecure)
-	o.insecure = true
-}
+func Insecure(o *Options) { _ = "STUB: not implemented"; return }
 
 // WithPlatform is an Option to specify the platform.
-func WithPlatform(platform *v1.Platform) Option {
-	return func(o *Options) {
-		if platform != nil {
-			o.Remote = append(o.Remote, remote.WithPlatform(*platform))
-		}
-		o.Platform = platform
-	}
-}
+func WithPlatform(platform *v1.Platform) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithAuthFromKeychain is a functional option for overriding the default
 // authenticator for remote operations, using an authn.Keychain to find
@@ -115,11 +74,11 @@ func WithPlatform(platform *v1.Platform) Option {
 //
 // By default, crane will use authn.DefaultKeychain.
 func WithAuthFromKeychain(keys authn.Keychain) Option {
-	return func(o *Options) {
-		// Replace the default keychain at position 0.
-		o.Remote[0] = remote.WithAuthFromKeychain(keys)
-		o.Keychain = keys
-	}
+	_ = "STUB: not implemented"
+	return *
+
+	// Replace the default keychain at position 0.
+	new(Option)
 }
 
 // WithAuth is a functional option for overriding the default authenticator
@@ -127,52 +86,28 @@ func WithAuthFromKeychain(keys authn.Keychain) Option {
 //
 // By default, crane will use authn.DefaultKeychain.
 func WithAuth(auth authn.Authenticator) Option {
-	return func(o *Options) {
-		// Replace the default keychain at position 0.
-		o.Remote[0] = remote.WithAuth(auth)
-		o.auth = auth
-	}
+	_ = "STUB: not implemented"
+	return *
+
+	// Replace the default keychain at position 0.
+	new(Option)
 }
 
 // WithUserAgent adds the given string to the User-Agent header for any HTTP
 // requests.
-func WithUserAgent(ua string) Option {
-	return func(o *Options) {
-		o.Remote = append(o.Remote, remote.WithUserAgent(ua))
-	}
-}
+func WithUserAgent(ua string) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithNondistributable is an option that allows pushing non-distributable
 // layers.
-func WithNondistributable() Option {
-	return func(o *Options) {
-		o.Remote = append(o.Remote, remote.WithNondistributable)
-	}
-}
+func WithNondistributable() Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithContext is a functional option for setting the context.
-func WithContext(ctx context.Context) Option {
-	return func(o *Options) {
-		o.ctx = ctx
-		o.Remote = append(o.Remote, remote.WithContext(ctx))
-	}
-}
+func WithContext(ctx context.Context) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithJobs sets the number of concurrent jobs to run.
 //
 // The default number of jobs is GOMAXPROCS.
-func WithJobs(jobs int) Option {
-	return func(o *Options) {
-		if jobs > 0 {
-			o.jobs = jobs
-		}
-		o.Remote = append(o.Remote, remote.WithJobs(o.jobs))
-	}
-}
+func WithJobs(jobs int) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithNoClobber modifies behavior to avoid overwriting existing tags, if possible.
-func WithNoClobber(noclobber bool) Option {
-	return func(o *Options) {
-		o.noclobber = noclobber
-	}
-}
+func WithNoClobber(noclobber bool) Option { _ = "STUB: not implemented"; return *new(Option) }

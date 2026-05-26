@@ -15,15 +15,11 @@
 package remote
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"sync"
 
-	"github.com/google/go-containerregistry/internal/verify"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
 
@@ -45,121 +41,66 @@ type remoteIndex struct {
 
 // Index provides access to a remote index reference.
 func Index(ref name.Reference, options ...Option) (v1.ImageIndex, error) {
-	desc, err := get(ref, acceptableIndexMediaTypes, options...)
-	if err != nil {
-		return nil, err
-	}
-
-	return desc.ImageIndex()
+	_ = "STUB: not implemented"
+	return *new(v1.ImageIndex), nil
 }
 
 func (r *remoteIndex) MediaType() (types.MediaType, error) {
-	if string(r.mediaType) != "" {
-		return r.mediaType, nil
-	}
-	return types.DockerManifestList, nil
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }
 
 func (r *remoteIndex) Digest() (v1.Hash, error) {
-	return partial.Digest(r)
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
-func (r *remoteIndex) Size() (int64, error) {
-	return partial.Size(r)
-}
+func (r *remoteIndex) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
-func (r *remoteIndex) RawManifest() ([]byte, error) {
-	r.manifestLock.Lock()
-	defer r.manifestLock.Unlock()
-	if r.manifest != nil {
-		return r.manifest, nil
-	}
+func (r *remoteIndex) RawManifest() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	// NOTE(jonjohnsonjr): We should never get here because the public entrypoints
-	// do type-checking via remote.Descriptor. I've left this here for tests that
-	// directly instantiate a remoteIndex.
-	manifest, desc, err := r.fetcher.fetchManifest(r.ctx, r.ref, acceptableIndexMediaTypes)
-	if err != nil {
-		return nil, err
-	}
-
-	if r.descriptor == nil {
-		r.descriptor = desc
-	}
-	r.mediaType = desc.MediaType
-	r.manifest = manifest
-	return r.manifest, nil
-}
+// NOTE(jonjohnsonjr): We should never get here because the public entrypoints
+// do type-checking via remote.Descriptor. I've left this here for tests that
+// directly instantiate a remoteIndex.
 
 func (r *remoteIndex) IndexManifest() (*v1.IndexManifest, error) {
-	b, err := r.RawManifest()
-	if err != nil {
-		return nil, err
-	}
-	return v1.ParseIndexManifest(bytes.NewReader(b))
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (r *remoteIndex) Image(h v1.Hash) (v1.Image, error) {
-	desc, err := r.childByHash(h)
-	if err != nil {
-		return nil, err
-	}
-
-	// Descriptor.Image will handle coercing nested indexes into an Image.
-	return desc.Image()
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
+
+// Descriptor.Image will handle coercing nested indexes into an Image.
 
 // Descriptor retains the original descriptor from an index manifest.
 // See partial.Descriptor.
 func (r *remoteIndex) Descriptor() (*v1.Descriptor, error) {
+	_ = "STUB: not implemented"
 	// kind of a hack, but RawManifest does appropriate locking/memoization
 	// and makes sure r.descriptor is populated.
-	_, err := r.RawManifest()
-	return r.descriptor, err
+	return nil, nil
 }
 
 func (r *remoteIndex) ImageIndex(h v1.Hash) (v1.ImageIndex, error) {
-	desc, err := r.childByHash(h)
-	if err != nil {
-		return nil, err
-	}
-	return desc.ImageIndex()
+	_ = "STUB: not implemented"
+	return *new(v1.ImageIndex), nil
 }
 
 // Workaround for #819.
 func (r *remoteIndex) Layer(h v1.Hash) (v1.Layer, error) {
-	index, err := r.IndexManifest()
-	if err != nil {
-		return nil, err
-	}
-	for _, childDesc := range index.Manifests {
-		if h == childDesc.Digest {
-			l, err := partial.CompressedToLayer(&remoteLayer{
-				fetcher: r.fetcher,
-				ctx:     r.ctx,
-				digest:  h,
-			})
-			if err != nil {
-				return nil, err
-			}
-			return &MountableLayer{
-				Layer:     l,
-				Reference: r.ref.Context().Digest(h.String()),
-			}, nil
-		}
-	}
-	return nil, fmt.Errorf("layer not found: %s", h)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 func (r *remoteIndex) imageByPlatform(platform v1.Platform) (v1.Image, error) {
-	desc, err := r.childByPlatform(platform)
-	if err != nil {
-		return nil, err
-	}
-
-	// Descriptor.Image will handle coercing nested indexes into an Image.
-	return desc.Image()
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
+
+// Descriptor.Image will handle coercing nested indexes into an Image.
 
 // This naively matches the first manifest with matching platform attributes.
 //
@@ -171,78 +112,25 @@ func (r *remoteIndex) imageByPlatform(platform v1.Platform) (v1.Image, error) {
 //
 //	github.com/opencontainers/image-spec/specs-go/v1
 func (r *remoteIndex) childByPlatform(platform v1.Platform) (*Descriptor, error) {
-	index, err := r.IndexManifest()
-	if err != nil {
-		return nil, err
-	}
-	for _, childDesc := range index.Manifests {
-		// If platform is missing from child descriptor, assume it's amd64/linux.
-		p := defaultPlatform
-		if childDesc.Platform != nil {
-			p = *childDesc.Platform
-		}
-
-		if matchesPlatform(p, platform) {
-			return r.childDescriptor(childDesc, platform)
-		}
-	}
-	return nil, fmt.Errorf("no child with platform %+v in index %s", platform, r.ref)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
+// If platform is missing from child descriptor, assume it's amd64/linux.
+
 func (r *remoteIndex) childByHash(h v1.Hash) (*Descriptor, error) {
-	index, err := r.IndexManifest()
-	if err != nil {
-		return nil, err
-	}
-	for _, childDesc := range index.Manifests {
-		if h == childDesc.Digest {
-			return r.childDescriptor(childDesc, defaultPlatform)
-		}
-	}
-	return nil, fmt.Errorf("no child with digest %s in index %s", h, r.ref)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Convert one of this index's child's v1.Descriptor into a remote.Descriptor, with the given platform option.
 func (r *remoteIndex) childDescriptor(child v1.Descriptor, platform v1.Platform) (*Descriptor, error) {
-	ref := r.ref.Context().Digest(child.Digest.String())
-	var (
-		manifest []byte
-		err      error
-	)
-	if child.Data != nil {
-		if err := verify.Descriptor(child); err != nil {
-			return nil, err
-		}
-		manifest = child.Data
-	} else {
-		manifest, _, err = r.fetcher.fetchManifest(r.ctx, ref, []types.MediaType{child.MediaType})
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if child.MediaType.IsImage() {
-		mf, _ := v1.ParseManifest(bytes.NewReader(manifest))
-		// Failing to parse as a manifest should just be ignored.
-		// The manifest might not be valid, and that's okay.
-		if mf != nil {
-			if mf.ArtifactType != "" {
-				child.ArtifactType = mf.ArtifactType
-			} else {
-				child.ArtifactType = string(mf.Config.MediaType)
-			}
-		}
-	}
-
-	return &Descriptor{
-		ref:        ref,
-		ctx:        r.ctx,
-		fetcher:    r.fetcher,
-		Manifest:   manifest,
-		Descriptor: child,
-		platform:   platform,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Failing to parse as a manifest should just be ignored.
+// The manifest might not be valid, and that's okay.
 
 // matchesPlatform checks if the given platform matches the required platforms.
 // The given platform matches the required platform if
@@ -250,42 +138,14 @@ func (r *remoteIndex) childDescriptor(child v1.Descriptor, platform v1.Platform)
 // - OS version and variant are identical if provided.
 // - features and OS features of the required platform are subsets of those of the given platform.
 func matchesPlatform(given, required v1.Platform) bool {
+	_ = "STUB: not implemented"
 	// Required fields that must be identical.
-	if given.Architecture != required.Architecture || given.OS != required.OS {
-		return false
-	}
-
-	// Optional fields that may be empty, but must be identical if provided.
-	if required.OSVersion != "" && given.OSVersion != required.OSVersion {
-		return false
-	}
-	if required.Variant != "" && given.Variant != required.Variant {
-		return false
-	}
-
-	// Verify required platform's features are a subset of given platform's features.
-	if !isSubset(given.OSFeatures, required.OSFeatures) {
-		return false
-	}
-	if !isSubset(given.Features, required.Features) {
-		return false
-	}
-
-	return true
+	return false
 }
+
+// Optional fields that may be empty, but must be identical if provided.
+
+// Verify required platform's features are a subset of given platform's features.
 
 // isSubset checks if the required array of strings is a subset of the given lst.
-func isSubset(lst, required []string) bool {
-	set := make(map[string]bool)
-	for _, value := range lst {
-		set[value] = true
-	}
-
-	for _, value := range required {
-		if _, ok := set[value]; !ok {
-			return false
-		}
-	}
-
-	return true
-}
+func isSubset(lst, required []string) bool { _ = "STUB: not implemented"; return false }

@@ -17,12 +17,9 @@ package remote
 import (
 	"context"
 	"errors"
-	"fmt"
 
-	"github.com/google/go-containerregistry/pkg/logs"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
 
@@ -37,9 +34,7 @@ var allManifestMediaTypes = append(append([]types.MediaType{
 var ErrSchema1 = errors.New("see https://github.com/google/go-containerregistry/issues/377")
 
 // newErrSchema1 returns an ErrSchema1 with the unexpected MediaType.
-func newErrSchema1(schema types.MediaType) error {
-	return fmt.Errorf("unsupported MediaType: %q, %w", schema, ErrSchema1)
-}
+func newErrSchema1(schema types.MediaType) error { _ = "STUB: not implemented"; return nil }
 
 // Descriptor provides access to metadata about remote artifact and accessors
 // for efficiently converting it into a v1.Image or v1.ImageIndex.
@@ -56,21 +51,28 @@ type Descriptor struct {
 }
 
 func (d *Descriptor) toDesc() v1.Descriptor {
-	return d.Descriptor
+	_ = "STUB: not implemented"
+	return *
+
+	// RawManifest exists to satisfy the Taggable interface.
+	new(v1.Descriptor)
 }
 
-// RawManifest exists to satisfy the Taggable interface.
 func (d *Descriptor) RawManifest() ([]byte, error) {
-	return d.Manifest, nil
+	_ = "STUB: not implemented"
+	return nil,
+
+		// Get returns a remote.Descriptor for the given reference. The response from
+		// the registry is left un-interpreted, for the most part. This is useful for
+		// querying what kind of artifact a reference represents.
+		//
+		// See Head if you don't need the response body.
+		nil
 }
 
-// Get returns a remote.Descriptor for the given reference. The response from
-// the registry is left un-interpreted, for the most part. This is useful for
-// querying what kind of artifact a reference represents.
-//
-// See Head if you don't need the response body.
 func Get(ref name.Reference, options ...Option) (*Descriptor, error) {
-	return get(ref, allManifestMediaTypes, options...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Head returns a v1.Descriptor for the given reference by issuing a HEAD
@@ -79,22 +81,15 @@ func Get(ref name.Reference, options ...Option) (*Descriptor, error) {
 // Note that the server response will not have a body, so any errors encountered
 // should be retried with Get to get more details.
 func Head(ref name.Reference, options ...Option) (*v1.Descriptor, error) {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return nil, err
-	}
-
-	return newPuller(o).Head(o.context, ref)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Handle options and fetch the manifest with the acceptable MediaTypes in the
 // Accept header.
 func get(ref name.Reference, acceptable []types.MediaType, options ...Option) (*Descriptor, error) {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return nil, err
-	}
-	return newPuller(o).get(o.context, ref, acceptable, o.platform)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Image converts the Descriptor into a v1.Image.
@@ -106,33 +101,22 @@ func get(ref name.Reference, acceptable []types.MediaType, options ...Option) (*
 //
 // See WithPlatform to set the desired platform.
 func (d *Descriptor) Image() (v1.Image, error) {
-	switch d.MediaType {
-	case types.DockerManifestSchema1, types.DockerManifestSchema1Signed:
-		// We don't care to support schema 1 images:
-		// https://github.com/google/go-containerregistry/issues/377
-		return nil, newErrSchema1(d.MediaType)
-	case types.OCIImageIndex, types.DockerManifestList:
-		// We want an image but the registry has an index, resolve it to an image.
-		return d.remoteIndex().imageByPlatform(d.platform)
-	case types.OCIManifestSchema1, types.DockerManifestSchema2:
-		// These are expected. Enumerated here to allow a default case.
-	default:
-		// We could just return an error here, but some registries (e.g. static
-		// registries) don't set the Content-Type headers correctly, so instead...
-		logs.Warn.Printf("Unexpected media type for Image(): %s", d.MediaType)
-	}
-
-	// Wrap the v1.Layers returned by this v1.Image in a hint for downstream
-	// remote.Write calls to facilitate cross-repo "mounting".
-	imgCore, err := partial.CompressedToImage(d.remoteImage())
-	if err != nil {
-		return nil, err
-	}
-	return &mountableImage{
-		Image:     imgCore,
-		Reference: d.ref,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
+
+// We don't care to support schema 1 images:
+// https://github.com/google/go-containerregistry/issues/377
+
+// We want an image but the registry has an index, resolve it to an image.
+
+// These are expected. Enumerated here to allow a default case.
+
+// We could just return an error here, but some registries (e.g. static
+// registries) don't set the Content-Type headers correctly, so instead...
+
+// Wrap the v1.Layers returned by this v1.Image in a hint for downstream
+// remote.Write calls to facilitate cross-repo "mounting".
 
 // Schema1 converts the Descriptor into a v1.Image for v2 schema 1 media types.
 //
@@ -140,59 +124,26 @@ func (d *Descriptor) Image() (v1.Image, error) {
 // This exists mostly to make it easier to copy schema 1 images around or look at their filesystems.
 // This is separate from Image() to avoid a backward incompatible change for callers expecting ErrSchema1.
 func (d *Descriptor) Schema1() (v1.Image, error) {
-	i := &schema1{
-		ref:        d.ref,
-		fetcher:    d.fetcher,
-		ctx:        d.ctx,
-		manifest:   d.Manifest,
-		mediaType:  d.MediaType,
-		descriptor: &d.Descriptor,
-	}
-
-	return &mountableImage{
-		Image:     i,
-		Reference: d.ref,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
 
 // ImageIndex converts the Descriptor into a v1.ImageIndex.
 func (d *Descriptor) ImageIndex() (v1.ImageIndex, error) {
-	switch d.MediaType {
-	case types.DockerManifestSchema1, types.DockerManifestSchema1Signed:
-		// We don't care to support schema 1 images:
-		// https://github.com/google/go-containerregistry/issues/377
-		return nil, newErrSchema1(d.MediaType)
-	case types.OCIManifestSchema1, types.DockerManifestSchema2:
-		// We want an index but the registry has an image, nothing we can do.
-		return nil, fmt.Errorf("unexpected media type for ImageIndex(): %s; call Image() instead", d.MediaType)
-	case types.OCIImageIndex, types.DockerManifestList:
-		// These are expected.
-	default:
-		// We could just return an error here, but some registries (e.g. static
-		// registries) don't set the Content-Type headers correctly, so instead...
-		logs.Warn.Printf("Unexpected media type for ImageIndex(): %s", d.MediaType)
-	}
-	return d.remoteIndex(), nil
+	_ = "STUB: not implemented"
+	return *new(v1.ImageIndex), nil
 }
 
-func (d *Descriptor) remoteImage() *remoteImage {
-	return &remoteImage{
-		ref:        d.ref,
-		ctx:        d.ctx,
-		fetcher:    d.fetcher,
-		manifest:   d.Manifest,
-		mediaType:  d.MediaType,
-		descriptor: &d.Descriptor,
-	}
-}
+// We don't care to support schema 1 images:
+// https://github.com/google/go-containerregistry/issues/377
 
-func (d *Descriptor) remoteIndex() *remoteIndex {
-	return &remoteIndex{
-		ref:        d.ref,
-		ctx:        d.ctx,
-		fetcher:    d.fetcher,
-		manifest:   d.Manifest,
-		mediaType:  d.MediaType,
-		descriptor: &d.Descriptor,
-	}
-}
+// We want an index but the registry has an image, nothing we can do.
+
+// These are expected.
+
+// We could just return an error here, but some registries (e.g. static
+// registries) don't set the Content-Type headers correctly, so instead...
+
+func (d *Descriptor) remoteImage() *remoteImage { _ = "STUB: not implemented"; return nil }
+
+func (d *Descriptor) remoteIndex() *remoteIndex { _ = "STUB: not implemented"; return nil }

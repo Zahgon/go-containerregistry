@@ -15,14 +15,9 @@
 package layout
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"io"
-	"os"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
 
@@ -36,126 +31,61 @@ type layoutIndex struct {
 
 // ImageIndexFromPath is a convenience function which constructs a Path and returns its v1.ImageIndex.
 func ImageIndexFromPath(path string) (v1.ImageIndex, error) {
-	lp, err := FromPath(path)
-	if err != nil {
-		return nil, err
-	}
-	return lp.ImageIndex()
+	_ = "STUB: not implemented"
+	return *new(v1.ImageIndex), nil
 }
 
 // ImageIndex returns a v1.ImageIndex for the Path.
 func (l Path) ImageIndex() (v1.ImageIndex, error) {
-	rawIndex, err := os.ReadFile(l.path("index.json"))
-	if err != nil {
-		return nil, err
-	}
-
-	idx := &layoutIndex{
-		mediaType: types.OCIImageIndex,
-		path:      l,
-		rawIndex:  rawIndex,
-	}
-
-	return idx, nil
+	_ = "STUB: not implemented"
+	return *new(v1.ImageIndex), nil
 }
 
 func (i *layoutIndex) MediaType() (types.MediaType, error) {
-	return i.mediaType, nil
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }
 
 func (i *layoutIndex) Digest() (v1.Hash, error) {
-	return partial.Digest(i)
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
-func (i *layoutIndex) Size() (int64, error) {
-	return partial.Size(i)
-}
+func (i *layoutIndex) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 func (i *layoutIndex) IndexManifest() (*v1.IndexManifest, error) {
-	var index v1.IndexManifest
-	err := json.Unmarshal(i.rawIndex, &index)
-	return &index, err
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (i *layoutIndex) RawManifest() ([]byte, error) {
-	return i.rawIndex, nil
-}
+func (i *layoutIndex) RawManifest() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (i *layoutIndex) Image(h v1.Hash) (v1.Image, error) {
+	_ = "STUB: not implemented"
 	// Look up the digest in our manifest first to return a better error.
-	desc, err := i.findDescriptor(h)
-	if err != nil {
-		return nil, err
-	}
-
-	if !isExpectedMediaType(desc.MediaType, types.OCIManifestSchema1, types.DockerManifestSchema2) {
-		return nil, fmt.Errorf("unexpected media type for %v: %s", h, desc.MediaType)
-	}
-
-	img := &layoutImage{
-		path: i.path,
-		desc: *desc,
-	}
-	return partial.CompressedToImage(img)
+	return *new(v1.Image), nil
 }
 
 func (i *layoutIndex) ImageIndex(h v1.Hash) (v1.ImageIndex, error) {
+	_ = "STUB: not implemented"
 	// Look up the digest in our manifest first to return a better error.
-	desc, err := i.findDescriptor(h)
-	if err != nil {
-		return nil, err
-	}
-
-	if !isExpectedMediaType(desc.MediaType, types.OCIImageIndex, types.DockerManifestList) {
-		return nil, fmt.Errorf("unexpected media type for %v: %s", h, desc.MediaType)
-	}
-
-	rawIndex, err := i.path.Bytes(h)
-	if err != nil {
-		return nil, err
-	}
-
-	return &layoutIndex{
-		mediaType: desc.MediaType,
-		path:      i.path,
-		rawIndex:  rawIndex,
-	}, nil
+	return *new(v1.ImageIndex), nil
 }
 
 func (i *layoutIndex) Blob(h v1.Hash) (io.ReadCloser, error) {
-	return i.path.Blob(h)
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 func (i *layoutIndex) findDescriptor(h v1.Hash) (*v1.Descriptor, error) {
-	im, err := i.IndexManifest()
-	if err != nil {
-		return nil, err
-	}
-
-	if h == (v1.Hash{}) {
-		if len(im.Manifests) != 1 {
-			return nil, errors.New("oci layout must contain only a single image to be used with layout.Image")
-		}
-		return &(im.Manifests)[0], nil
-	}
-
-	for _, desc := range im.Manifests {
-		if desc.Digest == h {
-			return &desc, nil
-		}
-	}
-
-	return nil, fmt.Errorf("could not find descriptor in index: %s", h)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // TODO: Pull this out into methods on types.MediaType? e.g. instead, have:
 // * mt.IsIndex()
 // * mt.IsImage()
 func isExpectedMediaType(mt types.MediaType, expected ...types.MediaType) bool {
-	for _, allowed := range expected {
-		if mt == allowed {
-			return true
-		}
-	}
+	_ = "STUB: not implemented"
 	return false
 }

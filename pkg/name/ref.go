@@ -38,13 +38,8 @@ type Reference interface {
 
 // ParseReference parses the string as a reference, either by tag or digest.
 func ParseReference(s string, opts ...Option) (Reference, error) {
-	if t, err := NewTag(s, opts...); err == nil {
-		return t, nil
-	}
-	if d, err := NewDigest(s, opts...); err == nil {
-		return d, nil
-	}
-	return nil, newErrBadName("could not parse reference: %s", s)
+	_ = "STUB: not implemented"
+	return *new(Reference), nil
 }
 
 type stringConst string
@@ -67,9 +62,6 @@ type stringConst string
 //	MustParseReference(str)
 //	MustParseReference(strings.Join([]string{"valid", "string"}, "/"))
 func MustParseReference(s stringConst, opts ...Option) Reference {
-	ref, err := ParseReference(string(s), opts...)
-	if err != nil {
-		panic(err)
-	}
-	return ref
+	_ = "STUB: not implemented"
+	return *new(Reference)
 }

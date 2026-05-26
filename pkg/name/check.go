@@ -14,30 +14,13 @@
 
 package name
 
-import (
-	"strings"
-	"unicode/utf8"
-)
-
 // stripRunesFn returns a function which returns -1 (i.e. a value which
 // signals deletion in strings.Map) for runes in 'runes', and the rune otherwise.
-func stripRunesFn(runes string) func(rune) rune {
-	return func(r rune) rune {
-		if strings.ContainsRune(runes, r) {
-			return -1
-		}
-		return r
-	}
-}
+func stripRunesFn(runes string) func(rune) rune { _ = "STUB: not implemented"; return nil }
 
 // checkElement checks a given named element matches character and length restrictions.
 // Returns true if the given element adheres to the given restrictions, false otherwise.
 func checkElement(name, element, allowedRunes string, minRunes, maxRunes int) error {
-	numRunes := utf8.RuneCountInString(element)
-	if (numRunes < minRunes) || (maxRunes < numRunes) {
-		return newErrBadName("%s must be between %d and %d characters in length: %s", name, minRunes, maxRunes, element)
-	} else if len(strings.Map(stripRunesFn(allowedRunes), element)) != 0 {
-		return newErrBadName("%s can only contain the characters `%s`: %s", name, allowedRunes, element)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }

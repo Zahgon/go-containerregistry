@@ -16,17 +16,6 @@ package crane
 
 // Manifest returns the manifest for the remote image or index ref.
 func Manifest(ref string, opt ...Option) ([]byte, error) {
-	desc, err := getManifest(ref, opt...)
-	if err != nil {
-		return nil, err
-	}
-	o := makeOptions(opt...)
-	if o.Platform != nil {
-		img, err := desc.Image()
-		if err != nil {
-			return nil, err
-		}
-		return img.RawManifest()
-	}
-	return desc.Manifest, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

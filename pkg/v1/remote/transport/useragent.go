@@ -17,7 +17,6 @@ package transport
 import (
 	"fmt"
 	"net/http"
-	"runtime/debug"
 )
 
 var (
@@ -45,30 +44,15 @@ func init() {
 }
 
 func version() string {
-	if Version != "" {
-		// Version was set via ldflags, just return it.
-		return Version
-	}
+	_ = "STUB: not implemented"
 
-	info, ok := debug.ReadBuildInfo()
-	if !ok {
-		return ""
-	}
-
-	// Happens for crane and gcrane.
-	if info.Main.Path == moduleName {
-		return info.Main.Version
-	}
-
-	// Anything else.
-	for _, dep := range info.Deps {
-		if dep.Path == moduleName {
-			return dep.Version
-		}
-	}
-
+	// Version was set via ldflags, just return it.
 	return ""
 }
+
+// Happens for crane and gcrane.
+
+// Anything else.
 
 // NewUserAgent returns an http.Roundtripper that sets the user agent to
 // The provided string plus additional go-containerregistry information,
@@ -76,19 +60,12 @@ func version() string {
 //
 // User-Agent: crane/v0.1.4 go-containerregistry/v0.1.4
 func NewUserAgent(inner http.RoundTripper, ua string) http.RoundTripper {
-	if ua == "" {
-		ua = ggcrVersion
-	} else {
-		ua = fmt.Sprintf("%s %s", ua, ggcrVersion)
-	}
-	return &userAgentTransport{
-		inner: inner,
-		ua:    ua,
-	}
+	_ = "STUB: not implemented"
+	return *new(http.RoundTripper)
 }
 
 // RoundTrip implements http.RoundTripper
 func (ut *userAgentTransport) RoundTrip(in *http.Request) (*http.Response, error) {
-	in.Header.Set("User-Agent", ut.ua)
-	return ut.inner.RoundTrip(in)
+	_ = "STUB: not implemented"
+	return nil, nil
 }

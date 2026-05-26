@@ -15,13 +15,9 @@
 package daemon
 
 import (
-	"bytes"
 	"context"
 	"io"
-	"os"
-	"runtime"
 	"sync"
-	"time"
 
 	api "github.com/moby/moby/api/types/image"
 
@@ -58,321 +54,103 @@ type imageOpener struct {
 }
 
 func (i *imageOpener) saveImage() (io.ReadCloser, error) {
-	return i.client.ImageSave(i.ctx, []string{i.ref.Name()})
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 func (i *imageOpener) bufferedOpener() (io.ReadCloser, error) {
+	_ = "STUB: not implemented"
 	// Store the tarball in memory and return a new reader into the bytes each time we need to access something.
-	i.once.Do(func() {
-		i.bytes, i.err = func() ([]byte, error) {
-			rc, err := i.saveImage()
-			if err != nil {
-				return nil, err
-			}
-			defer rc.Close()
-
-			return io.ReadAll(rc)
-		}()
-	})
-
-	// Wrap the bytes in a ReadCloser so it looks like an opened file.
-	return io.NopCloser(bytes.NewReader(i.bytes)), i.err
+	return *new(io.ReadCloser), nil
 }
 
+// Wrap the bytes in a ReadCloser so it looks like an opened file.
+
 func (i *imageOpener) fileBackedOpener() (io.ReadCloser, error) {
-	i.once.Do(func() {
-		rc, err := i.saveImage()
-		if err != nil {
-			i.err = err
-			return
-		}
-		defer rc.Close()
-
-		f, err := os.CreateTemp("", "go-containerregistry-*.tar")
-		if err != nil {
-			i.err = err
-			return
-		}
-
-		if _, err := io.Copy(f, rc); err != nil {
-			f.Close()
-			os.Remove(f.Name())
-			i.err = err
-			return
-		}
-		f.Close()
-		i.tmpPath = f.Name()
-
-		runtime.AddCleanup(i, func(path string) {
-			_ = os.Remove(path)
-		}, i.tmpPath)
-	})
-
-	if i.err != nil {
-		return nil, i.err
-	}
-	return os.Open(i.tmpPath)
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 func (i *imageOpener) opener() tarball.Opener {
-	switch i.bufferMode {
-	case bufferMemory:
-		return i.bufferedOpener
-	case bufferFile:
-		return i.fileBackedOpener
-	default:
-		return i.saveImage
-	}
+	_ = "STUB: not implemented"
+	return *new(tarball.Opener)
 }
 
 // Image provides access to an image reference from the Docker daemon,
 // applying functional options to the underlying imageOpener before
 // resolving the reference into a v1.Image.
 func Image(ref name.Reference, options ...Option) (v1.Image, error) {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return nil, err
-	}
-
-	i := &imageOpener{
-		ref:        ref,
-		bufferMode: o.bufferMode,
-		client:     o.client,
-		ctx:        o.ctx,
-	}
-
-	img := &image{
-		ref:    ref,
-		opener: i,
-	}
-
-	// Eagerly fetch Image ID to ensure it actually exists.
-	// https://github.com/google/go-containerregistry/issues/1186
-	id, err := img.ConfigName()
-	if err != nil {
-		return nil, err
-	}
-	img.id = &id
-
-	return img, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
+
+// Eagerly fetch Image ID to ensure it actually exists.
+// https://github.com/google/go-containerregistry/issues/1186
 
 func (i *image) initialize() error {
+	_ = "STUB: not implemented"
 	// Don't re-initialize tarball if already initialized.
-	if i.tarballImage == nil {
-		i.once.Do(func() {
-			i.tarballImage, i.err = tarball.Image(i.opener.opener(), nil)
-		})
-	}
-	return i.err
-}
-
-func (i *image) compute() error {
-	// Don't re-compute if already computed.
-	if i.computed {
-		return nil
-	}
-
-	inspect, err := i.opener.client.ImageInspect(i.opener.ctx, i.ref.String())
-	if err != nil {
-		return err
-	}
-
-	configFile, err := i.computeConfigFile(inspect.InspectResponse)
-	if err != nil {
-		return err
-	}
-
-	i.configFile = configFile
-	i.computed = true
-
 	return nil
 }
 
-func (i *image) Layers() ([]v1.Layer, error) {
-	if err := i.initialize(); err != nil {
-		return nil, err
-	}
-	return i.tarballImage.Layers()
+func (i *image) compute() error {
+	_ = "STUB: not implemented"
+	// Don't re-compute if already computed.
+	return nil
 }
+
+func (i *image) Layers() ([]v1.Layer, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (i *image) MediaType() (types.MediaType, error) {
-	if err := i.initialize(); err != nil {
-		return "", err
-	}
-	return i.tarballImage.MediaType()
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }
 
-func (i *image) Size() (int64, error) {
-	if err := i.initialize(); err != nil {
-		return 0, err
-	}
-	return i.tarballImage.Size()
-}
+func (i *image) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
-func (i *image) ConfigName() (v1.Hash, error) {
-	if i.id != nil {
-		return *i.id, nil
-	}
-	res, err := i.opener.client.ImageInspect(i.opener.ctx, i.ref.String())
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	return v1.NewHash(res.ID)
-}
+func (i *image) ConfigName() (v1.Hash, error) { _ = "STUB: not implemented"; return *new(v1.Hash), nil }
 
-func (i *image) ConfigFile() (*v1.ConfigFile, error) {
-	if err := i.compute(); err != nil {
-		return nil, err
-	}
-	return i.configFile.DeepCopy(), nil
-}
+func (i *image) ConfigFile() (*v1.ConfigFile, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func (i *image) RawConfigFile() ([]byte, error) {
-	if err := i.initialize(); err != nil {
-		return nil, err
-	}
+func (i *image) RawConfigFile() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	// RawConfigFile cannot be generated from "docker inspect" because Docker Engine API returns serialized data,
-	// and formatting information of the raw config such as indent and prefix will be lost.
-	return i.tarballImage.RawConfigFile()
-}
+// RawConfigFile cannot be generated from "docker inspect" because Docker Engine API returns serialized data,
+// and formatting information of the raw config such as indent and prefix will be lost.
 
-func (i *image) Digest() (v1.Hash, error) {
-	if err := i.initialize(); err != nil {
-		return v1.Hash{}, err
-	}
-	return i.tarballImage.Digest()
-}
+func (i *image) Digest() (v1.Hash, error) { _ = "STUB: not implemented"; return *new(v1.Hash), nil }
 
-func (i *image) Manifest() (*v1.Manifest, error) {
-	if err := i.initialize(); err != nil {
-		return nil, err
-	}
-	return i.tarballImage.Manifest()
-}
+func (i *image) Manifest() (*v1.Manifest, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func (i *image) RawManifest() ([]byte, error) {
-	if err := i.initialize(); err != nil {
-		return nil, err
-	}
-	return i.tarballImage.RawManifest()
-}
+func (i *image) RawManifest() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (i *image) LayerByDigest(h v1.Hash) (v1.Layer, error) {
-	if err := i.initialize(); err != nil {
-		return nil, err
-	}
-	return i.tarballImage.LayerByDigest(h)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 func (i *image) LayerByDiffID(h v1.Hash) (v1.Layer, error) {
-	if err := i.initialize(); err != nil {
-		return nil, err
-	}
-	return i.tarballImage.LayerByDiffID(h)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 func (i *image) configHistory(author string) ([]v1.History, error) {
-	res, err := i.opener.client.ImageHistory(i.opener.ctx, i.ref.String())
-	if err != nil {
-		return nil, err
-	}
-
-	history := make([]v1.History, len(res.Items))
-	for j, h := range res.Items {
-		history[j] = v1.History{
-			Author: author,
-			Created: v1.Time{
-				Time: time.Unix(h.Created, 0).UTC(),
-			},
-			CreatedBy:  h.CreatedBy,
-			Comment:    h.Comment,
-			EmptyLayer: h.Size == 0,
-		}
-	}
-	return history, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (i *image) diffIDs(rootFS api.RootFS) ([]v1.Hash, error) {
-	diffIDs := make([]v1.Hash, len(rootFS.Layers))
-	for j, l := range rootFS.Layers {
-		h, err := v1.NewHash(l)
-		if err != nil {
-			return nil, err
-		}
-		diffIDs[j] = h
-	}
-	return diffIDs, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (i *image) computeConfigFile(inspect api.InspectResponse) (*v1.ConfigFile, error) {
-	diffIDs, err := i.diffIDs(inspect.RootFS)
-	if err != nil {
-		return nil, err
-	}
-
-	history, err := i.configHistory(inspect.Author)
-	if err != nil {
-		return nil, err
-	}
-
-	created, err := time.Parse(time.RFC3339Nano, inspect.Created)
-	if err != nil {
-		return nil, err
-	}
-
-	return &v1.ConfigFile{
-		Architecture: inspect.Architecture,
-		Author:       inspect.Author,
-		Created:      v1.Time{Time: created},
-		History:      history,
-		OS:           inspect.Os,
-		RootFS: v1.RootFS{
-			Type:    inspect.RootFS.Type,
-			DiffIDs: diffIDs,
-		},
-		Config:    i.computeImageConfig(inspect.Config),
-		OSVersion: inspect.OsVersion,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (i *image) computeImageConfig(config *specs.DockerOCIImageConfig) v1.Config {
-	if config == nil {
-		return v1.Config{}
-	}
-
-	c := v1.Config{
-		Cmd:        config.Cmd,
-		Entrypoint: config.Entrypoint,
-		Env:        config.Env,
-		Labels:     config.Labels,
-		OnBuild:    config.OnBuild,
-		User:       config.User,
-		Volumes:    config.Volumes,
-		WorkingDir: config.WorkingDir,
-		//nolint:staticcheck // SA1019 this is erroneously deprecated, as windows uses it
-		ArgsEscaped: config.ArgsEscaped,
-		StopSignal:  config.StopSignal,
-		Shell:       config.Shell,
-	}
-
-	if config.Healthcheck != nil {
-		c.Healthcheck = &v1.HealthConfig{
-			Test:        config.Healthcheck.Test,
-			Interval:    config.Healthcheck.Interval,
-			Timeout:     config.Healthcheck.Timeout,
-			StartPeriod: config.Healthcheck.StartPeriod,
-			Retries:     config.Healthcheck.Retries,
-		}
-	}
-
-	if len(config.ExposedPorts) > 0 {
-		c.ExposedPorts = map[string]struct{}{}
-		for port := range c.ExposedPorts {
-			c.ExposedPorts[port] = struct{}{}
-		}
-	}
-
-	return c
+	_ = "STUB: not implemented"
+	return *new(v1.Config)
 }
+
+//nolint:staticcheck // SA1019 this is erroneously deprecated, as windows uses it

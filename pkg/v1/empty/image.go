@@ -15,8 +15,6 @@
 package empty
 
 import (
-	"fmt"
-
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/google/go-containerregistry/pkg/v1/types"
@@ -29,24 +27,22 @@ type emptyImage struct{}
 
 // MediaType implements partial.UncompressedImageCore.
 func (i emptyImage) MediaType() (types.MediaType, error) {
-	return types.DockerManifestSchema2, nil
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }
 
 // RawConfigFile implements partial.UncompressedImageCore.
-func (i emptyImage) RawConfigFile() ([]byte, error) {
-	return partial.RawConfigFile(i)
-}
+func (i emptyImage) RawConfigFile() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // ConfigFile implements v1.Image.
 func (i emptyImage) ConfigFile() (*v1.ConfigFile, error) {
-	return &v1.ConfigFile{
-		RootFS: v1.RootFS{
-			// Some clients check this.
-			Type: "layers",
-		},
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
+// Some clients check this.
+
 func (i emptyImage) LayerByDiffID(h v1.Hash) (partial.UncompressedLayer, error) {
-	return nil, fmt.Errorf("LayerByDiffID(%s): empty image", h)
+	_ = "STUB: not implemented"
+	return *new(partial.UncompressedLayer), nil
 }

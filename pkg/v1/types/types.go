@@ -46,53 +46,17 @@ const (
 
 // IsDistributable returns true if a layer is distributable, see:
 // https://github.com/opencontainers/image-spec/blob/master/layer.md#non-distributable-layers
-func (m MediaType) IsDistributable() bool {
-	switch m {
-	case DockerForeignLayer, OCIRestrictedLayer, OCIUncompressedRestrictedLayer:
-		return false
-	}
-	return true
-}
+func (m MediaType) IsDistributable() bool { _ = "STUB: not implemented"; return false }
 
 // IsImage returns true if the mediaType represents an image manifest, as opposed to something else, like an index.
-func (m MediaType) IsImage() bool {
-	switch m {
-	case OCIManifestSchema1, DockerManifestSchema2:
-		return true
-	}
-	return false
-}
+func (m MediaType) IsImage() bool { _ = "STUB: not implemented"; return false }
 
 // IsIndex returns true if the mediaType represents an index, as opposed to something else, like an image.
-func (m MediaType) IsIndex() bool {
-	switch m {
-	case OCIImageIndex, DockerManifestList:
-		return true
-	}
-	return false
-}
+func (m MediaType) IsIndex() bool { _ = "STUB: not implemented"; return false }
 
 // IsConfig returns true if the mediaType represents a config, as opposed to something else, like an image.
-func (m MediaType) IsConfig() bool {
-	switch m {
-	case OCIConfigJSON, DockerConfigJSON:
-		return true
-	}
-	return false
-}
+func (m MediaType) IsConfig() bool { _ = "STUB: not implemented"; return false }
 
-func (m MediaType) IsSchema1() bool {
-	switch m {
-	case DockerManifestSchema1, DockerManifestSchema1Signed:
-		return true
-	}
-	return false
-}
+func (m MediaType) IsSchema1() bool { _ = "STUB: not implemented"; return false }
 
-func (m MediaType) IsLayer() bool {
-	switch m {
-	case DockerLayer, DockerUncompressedLayer, OCILayer, OCILayerZStd, OCIUncompressedLayer, DockerForeignLayer, OCIRestrictedLayer, OCIUncompressedRestrictedLayer:
-		return true
-	}
-	return false
-}
+func (m MediaType) IsLayer() bool { _ = "STUB: not implemented"; return false }

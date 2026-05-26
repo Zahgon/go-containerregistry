@@ -16,61 +16,21 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/google/go-containerregistry/pkg/gcrane"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/google"
 	"github.com/spf13/cobra"
 )
 
 // NewCmdGc creates a new cobra.Command for the gc subcommand.
-func NewCmdGc() *cobra.Command {
-	recursive := false
-	cmd := &cobra.Command{
-		Use:   "gc",
-		Short: "List images that are not tagged",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cc *cobra.Command, args []string) error {
-			return gc(cc.Context(), args[0], recursive)
-		},
-	}
-
-	cmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "Whether to recurse through repos")
-
-	return cmd
-}
+func NewCmdGc() *cobra.Command { _ = "STUB: not implemented"; return nil }
 
 func gc(ctx context.Context, root string, recursive bool) error {
-	repo, err := name.NewRepository(root)
-	if err != nil {
-		return err
-	}
-
-	opts := []google.Option{
-		google.WithAuthFromKeychain(gcrane.Keychain),
-		google.WithUserAgent(userAgent()),
-		google.WithContext(ctx),
-	}
-
-	if recursive {
-		return google.Walk(repo, printUntaggedImages, opts...)
-	}
-
-	tags, err := google.List(repo, opts...)
-	return printUntaggedImages(repo, tags, err)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func printUntaggedImages(repo name.Repository, tags *google.Tags, err error) error {
-	if err != nil {
-		return err
-	}
-
-	for digest, manifest := range tags.Manifests {
-		if len(manifest.Tags) == 0 {
-			fmt.Printf("%s@%s\n", repo, digest)
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }

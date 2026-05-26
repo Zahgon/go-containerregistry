@@ -15,52 +15,12 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/google/go-containerregistry/pkg/v1/layout"
 	"github.com/spf13/cobra"
 )
 
-func NewCmdLayout() *cobra.Command {
-	cmd := &cobra.Command{
-		Use: "layout",
-	}
-	cmd.AddCommand(newCmdGc())
-	return cmd
-}
+func NewCmdLayout() *cobra.Command { _ = "STUB: not implemented"; return nil }
 
 // NewCmdGc creates a new cobra.Command for the pull subcommand.
-func newCmdGc() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:    "gc OCI-LAYOUT",
-		Short:  "Garbage collect unreferenced blobs in a local oci-layout",
-		Args:   cobra.ExactArgs(1),
-		Hidden: true, // TODO: promote to public once theres some milage
-		RunE: func(_ *cobra.Command, args []string) error {
-			path := args[0]
+func newCmdGc() *cobra.Command { _ = "STUB: not implemented"; return nil }
 
-			p, err := layout.FromPath(path)
-
-			if err != nil {
-				return err
-			}
-
-			blobs, err := p.GarbageCollect()
-			if err != nil {
-				return err
-			}
-
-			for _, blob := range blobs {
-				if err := p.RemoveBlob(blob); err != nil {
-					return err
-				}
-				fmt.Fprintf(os.Stderr, "garbage collecting: %s\n", blob.String())
-			}
-
-			return nil
-		},
-	}
-
-	return cmd
-}
+// TODO: promote to public once theres some milage

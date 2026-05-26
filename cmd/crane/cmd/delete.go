@@ -20,14 +20,4 @@ import (
 )
 
 // NewCmdDelete creates a new cobra.Command for the delete subcommand.
-func NewCmdDelete(options *[]crane.Option) *cobra.Command {
-	return &cobra.Command{
-		Use:   "delete IMAGE",
-		Short: "Delete an image reference from its registry",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(_ *cobra.Command, args []string) error {
-			ref := args[0]
-			return crane.Delete(ref, *options...)
-		},
-	}
-}
+func NewCmdDelete(options *[]crane.Option) *cobra.Command { _ = "STUB: not implemented"; return nil }

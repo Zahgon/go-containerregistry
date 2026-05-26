@@ -17,11 +17,7 @@
 package editor
 
 import (
-	"fmt"
 	"io"
-	"os"
-	"os/exec"
-	"path/filepath"
 )
 
 // Edit opens a temporary file in the default editor (per $EDITOR, falling back
@@ -30,35 +26,6 @@ import (
 //
 // The contents of the edited file are returned, and the temporary file removed.
 func Edit(input io.Reader, extension string) ([]byte, error) {
-	f, err := os.CreateTemp("", fmt.Sprintf("%s-edit.*.%s", filepath.Base(os.Args[0]), extension))
-	if err != nil {
-		return nil, err
-	}
-	defer os.Remove(f.Name())
-
-	if _, err := io.Copy(f, input); err != nil {
-		return nil, err
-	}
-	f.Close()
-
-	editor := "vi"
-	if env := os.Getenv("EDITOR"); env != "" {
-		editor = env
-	}
-
-	path, err := exec.LookPath(editor)
-	if err != nil {
-		return nil, err
-	}
-
-	cmd := exec.Command(path, f.Name())
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		return nil, err
-	}
-
-	return os.ReadFile(f.Name())
+	_ = "STUB: not implemented"
+	return nil, nil
 }

@@ -17,7 +17,6 @@ package name
 import (
 	"encoding"
 	"encoding/json"
-	"strings"
 )
 
 const (
@@ -41,106 +40,64 @@ var _ json.Unmarshaler = (*Tag)(nil)
 
 // Context implements Reference.
 func (t Tag) Context() Repository {
-	return t.Repository
+	_ = "STUB: not implemented"
+	return *
+
+	// Identifier implements Reference.
+	new(Repository)
 }
 
-// Identifier implements Reference.
 func (t Tag) Identifier() string {
-	return t.TagStr()
+	_ = "STUB: not implemented"
+
+	// TagStr returns the tag component of the Tag.
+	return ""
 }
 
-// TagStr returns the tag component of the Tag.
 func (t Tag) TagStr() string {
-	return t.tag
+	_ = "STUB: not implemented"
+
+	// Name returns the name from which the Tag was derived.
+	return ""
 }
 
-// Name returns the name from which the Tag was derived.
-func (t Tag) Name() string {
-	return t.Repository.Name() + tagDelim + t.TagStr()
-}
+func (t Tag) Name() string { _ = "STUB: not implemented"; return "" }
 
 // String returns the original input string.
 func (t Tag) String() string {
-	return t.original
+	_ = "STUB: not implemented"
+
+	// Scope returns the scope required to perform the given action on the tag.
+	return ""
 }
 
-// Scope returns the scope required to perform the given action on the tag.
-func (t Tag) Scope(action string) string {
-	return t.Repository.Scope(action)
-}
+func (t Tag) Scope(action string) string { _ = "STUB: not implemented"; return "" }
 
-func checkTag(name string) error {
-	return checkElement("tag", name, tagChars, 1, 128)
-}
+func checkTag(name string) error { _ = "STUB: not implemented"; return nil }
 
 // NewTag returns a new Tag representing the given name, according to the given strictness.
 func NewTag(name string, opts ...Option) (Tag, error) {
-	opt := makeOptions(opts...)
-	base := name
-	tag := ""
-
-	// Split on ":"
-	parts := strings.Split(name, tagDelim)
-	// Verify that we aren't confusing a tag for a hostname w/ port for the purposes of weak validation.
-	if len(parts) > 1 && !strings.Contains(parts[len(parts)-1], regRepoDelimiter) {
-		base = strings.Join(parts[:len(parts)-1], tagDelim)
-		tag = parts[len(parts)-1]
-		if tag == "" {
-			return Tag{}, newErrBadName("%s must specify a tag name after the colon", name)
-		}
-	}
-
-	// We don't require a tag, but if we get one check it's valid,
-	// even when not being strict.
-	// If we are being strict, we want to validate the tag regardless in case
-	// it's empty.
-	if tag != "" || opt.strict {
-		if err := checkTag(tag); err != nil {
-			return Tag{}, err
-		}
-	}
-
-	if tag == "" {
-		tag = opt.defaultTag
-	}
-
-	repo, err := NewRepository(base, opts...)
-	if err != nil {
-		return Tag{}, err
-	}
-	return Tag{
-		Repository: repo,
-		tag:        tag,
-		original:   name,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(Tag), nil
 }
+
+// Split on ":"
+
+// Verify that we aren't confusing a tag for a hostname w/ port for the purposes of weak validation.
+
+// We don't require a tag, but if we get one check it's valid,
+// even when not being strict.
+// If we are being strict, we want to validate the tag regardless in case
+// it's empty.
 
 // MarshalJSON formats the Tag into a string for JSON serialization.
-func (t Tag) MarshalJSON() ([]byte, error) { return json.Marshal(t.String()) }
+func (t Tag) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalJSON parses a JSON string into a Tag.
-func (t *Tag) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
-	}
-	n, err := NewTag(s)
-	if err != nil {
-		return err
-	}
-	*t = n
-	return nil
-}
+func (t *Tag) UnmarshalJSON(data []byte) error { _ = "STUB: not implemented"; return nil }
 
 // MarshalText formats the tag into a string for text serialization.
-func (t Tag) MarshalText() ([]byte, error) { return []byte(t.String()), nil }
+func (t Tag) MarshalText() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalText parses a text string into a Tag.
-func (t *Tag) UnmarshalText(data []byte) error {
-	n, err := NewTag(string(data))
-	if err != nil {
-		return err
-	}
-	*t = n
-	return nil
-}
+func (t *Tag) UnmarshalText(data []byte) error { _ = "STUB: not implemented"; return nil }

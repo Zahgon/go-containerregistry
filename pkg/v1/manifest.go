@@ -15,7 +15,6 @@
 package v1
 
 import (
-	"encoding/json"
 	"io"
 
 	"github.com/google/go-containerregistry/pkg/v1/types"
@@ -55,19 +54,10 @@ type Descriptor struct {
 }
 
 // ParseManifest parses the io.Reader's contents into a Manifest.
-func ParseManifest(r io.Reader) (*Manifest, error) {
-	m := Manifest{}
-	if err := json.NewDecoder(r).Decode(&m); err != nil {
-		return nil, err
-	}
-	return &m, nil
-}
+func ParseManifest(r io.Reader) (*Manifest, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // ParseIndexManifest parses the io.Reader's contents into an IndexManifest.
 func ParseIndexManifest(r io.Reader) (*IndexManifest, error) {
-	im := IndexManifest{}
-	if err := json.NewDecoder(r).Decode(&im); err != nil {
-		return nil, err
-	}
-	return &im, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

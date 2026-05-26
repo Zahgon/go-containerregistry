@@ -16,31 +16,12 @@ package remote
 
 import (
 	"github.com/google/go-containerregistry/pkg/name"
-	"golang.org/x/sync/errgroup"
 )
 
 // MultiWrite writes the given Images or ImageIndexes to the given refs, as
 // efficiently as possible, by deduping shared layer blobs while uploading them
 // in parallel.
 func MultiWrite(todo map[name.Reference]Taggable, options ...Option) (rerr error) {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return err
-	}
-	if o.progress != nil {
-		defer func() { o.progress.Close(rerr) }()
-	}
-	p := newPusher(o)
-
-	g, ctx := errgroup.WithContext(o.context)
-	g.SetLimit(o.jobs)
-
-	for ref, t := range todo {
-		ref, t := ref, t
-		g.Go(func() error {
-			return p.Push(ctx, ref, t)
-		})
-	}
-
-	return g.Wait()
+	_ = "STUB: not implemented"
+	return nil
 }

@@ -24,22 +24,11 @@ type pullLimiter struct {
 	tokens chan struct{}
 }
 
-func newPullLimiter(jobs int) *pullLimiter {
-	return &pullLimiter{
-		tokens: make(chan struct{}, jobs),
-	}
-}
+func newPullLimiter(jobs int) *pullLimiter { _ = "STUB: not implemented"; return nil }
 
 func (l *pullLimiter) acquire(ctx context.Context) (func(), error) {
-	if l == nil {
-		return func() {}, nil
-	}
-	select {
-	case l.tokens <- struct{}{}:
-		return func() { <-l.tokens }, nil
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	}
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 type limitedReadCloser struct {
@@ -48,8 +37,4 @@ type limitedReadCloser struct {
 	once    sync.Once
 }
 
-func (l *limitedReadCloser) Close() error {
-	err := l.ReadCloser.Close()
-	l.once.Do(l.release)
-	return err
-}
+func (l *limitedReadCloser) Close() error { _ = "STUB: not implemented"; return nil }

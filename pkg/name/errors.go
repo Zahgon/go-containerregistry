@@ -14,35 +14,24 @@
 
 package name
 
-import (
-	"errors"
-	"fmt"
-)
-
 // ErrBadName is an error for when a bad docker name is supplied.
 type ErrBadName struct {
 	info string
 }
 
 func (e *ErrBadName) Error() string {
-	return e.info
+	_ = "STUB: not implemented"
+
+	// Is reports whether target is an error of type ErrBadName
+	return ""
 }
 
-// Is reports whether target is an error of type ErrBadName
-func (e *ErrBadName) Is(target error) bool {
-	var berr *ErrBadName
-	return errors.As(target, &berr)
-}
+func (e *ErrBadName) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 // newErrBadName returns a ErrBadName which returns the given formatted string from Error().
-func newErrBadName(fmtStr string, args ...any) *ErrBadName {
-	return &ErrBadName{fmt.Sprintf(fmtStr, args...)}
-}
+func newErrBadName(fmtStr string, args ...any) *ErrBadName { _ = "STUB: not implemented"; return nil }
 
 // IsErrBadName returns true if the given error is an ErrBadName.
 //
 // Deprecated: Use errors.Is.
-func IsErrBadName(err error) bool {
-	var berr *ErrBadName
-	return errors.As(err, &berr)
-}
+func IsErrBadName(err error) bool { _ = "STUB: not implemented"; return false }

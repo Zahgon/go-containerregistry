@@ -19,10 +19,4 @@ import (
 )
 
 // Delete removes the specified image reference from the remote registry.
-func Delete(ref name.Reference, options ...Option) error {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return err
-	}
-	return newPusher(o).Delete(o.context, ref)
-}
+func Delete(ref name.Reference, options ...Option) error { _ = "STUB: not implemented"; return nil }

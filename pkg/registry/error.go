@@ -15,7 +15,6 @@
 package registry
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
@@ -25,34 +24,10 @@ type regError struct {
 	Message string
 }
 
-func (r *regError) Write(resp http.ResponseWriter) error {
-	resp.WriteHeader(r.Status)
-
-	type err struct {
-		Code    string `json:"code"`
-		Message string `json:"message"`
-	}
-	type wrap struct {
-		Errors []err `json:"errors"`
-	}
-	return json.NewEncoder(resp).Encode(wrap{
-		Errors: []err{
-			{
-				Code:    r.Code,
-				Message: r.Message,
-			},
-		},
-	})
-}
+func (r *regError) Write(resp http.ResponseWriter) error { _ = "STUB: not implemented"; return nil }
 
 // regErrInternal returns an internal server error.
-func regErrInternal(err error) *regError {
-	return &regError{
-		Status:  http.StatusInternalServerError,
-		Code:    "INTERNAL_SERVER_ERROR",
-		Message: err.Error(),
-	}
-}
+func regErrInternal(err error) *regError { _ = "STUB: not implemented"; return nil }
 
 var regErrBlobUnknown = &regError{
 	Status:  http.StatusNotFound,

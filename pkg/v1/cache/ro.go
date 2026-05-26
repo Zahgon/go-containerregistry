@@ -19,9 +19,9 @@ import v1 "github.com/google/go-containerregistry/pkg/v1"
 // ReadOnly returns a read-only implementation of the given Cache.
 //
 // Put and Delete operations are a no-op.
-func ReadOnly(c Cache) Cache { return &ro{Cache: c} }
+func ReadOnly(c Cache) Cache { _ = "STUB: not implemented"; return *new(Cache) }
 
 type ro struct{ Cache }
 
-func (ro) Put(l v1.Layer) (v1.Layer, error) { return l, nil }
-func (ro) Delete(v1.Hash) error             { return nil }
+func (ro) Put(l v1.Layer) (v1.Layer, error) { _ = "STUB: not implemented"; return *new(v1.Layer), nil }
+func (ro) Delete(v1.Hash) error             { _ = "STUB: not implemented"; return nil }

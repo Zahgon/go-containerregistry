@@ -15,9 +15,6 @@
 package partial
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"io"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -32,21 +29,14 @@ type WithRawConfigFile interface {
 
 // ConfigFile is a helper for implementing v1.Image
 func ConfigFile(i WithRawConfigFile) (*v1.ConfigFile, error) {
-	b, err := i.RawConfigFile()
-	if err != nil {
-		return nil, err
-	}
-	return v1.ParseConfigFile(bytes.NewReader(b))
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // ConfigName is a helper for implementing v1.Image
 func ConfigName(i WithRawConfigFile) (v1.Hash, error) {
-	b, err := i.RawConfigFile()
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	h, _, err := v1.SHA256(bytes.NewReader(b))
-	return h, err
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
 type configLayer struct {
@@ -56,33 +46,40 @@ type configLayer struct {
 
 // Digest implements v1.Layer
 func (cl *configLayer) Digest() (v1.Hash, error) {
-	return cl.hash, nil
+	_ = "STUB: not implemented"
+	return *
+
+	// DiffID implements v1.Layer
+	new(v1.Hash), nil
 }
 
-// DiffID implements v1.Layer
 func (cl *configLayer) DiffID() (v1.Hash, error) {
-	return cl.hash, nil
+	_ = "STUB: not implemented"
+	return *
+
+	// Uncompressed implements v1.Layer
+	new(v1.Hash), nil
 }
 
-// Uncompressed implements v1.Layer
 func (cl *configLayer) Uncompressed() (io.ReadCloser, error) {
-	return io.NopCloser(bytes.NewBuffer(cl.content)), nil
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // Compressed implements v1.Layer
 func (cl *configLayer) Compressed() (io.ReadCloser, error) {
-	return io.NopCloser(bytes.NewBuffer(cl.content)), nil
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // Size implements v1.Layer
-func (cl *configLayer) Size() (int64, error) {
-	return int64(len(cl.content)), nil
-}
+func (cl *configLayer) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 func (cl *configLayer) MediaType() (types.MediaType, error) {
+	_ = "STUB: not implemented"
 	// Defaulting this to OCIConfigJSON as it should remain
 	// backwards compatible with DockerConfigJSON
-	return types.OCIConfigJSON, nil
+	return *new(types.MediaType), nil
 }
 
 var _ v1.Layer = (*configLayer)(nil)
@@ -99,22 +96,8 @@ type withConfigLayer interface {
 // Images that want to return a specific layer implementation can implement
 // withConfigLayer.
 func ConfigLayer(i WithRawConfigFile) (v1.Layer, error) {
-	if wcl, ok := unwrap(i).(withConfigLayer); ok {
-		return wcl.ConfigLayer()
-	}
-
-	h, err := ConfigName(i)
-	if err != nil {
-		return nil, err
-	}
-	rcfg, err := i.RawConfigFile()
-	if err != nil {
-		return nil, err
-	}
-	return &configLayer{
-		hash:    h,
-		content: rcfg,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // WithConfigFile defines the subset of v1.Image used by these helper methods
@@ -124,22 +107,10 @@ type WithConfigFile interface {
 }
 
 // DiffIDs is a helper for implementing v1.Image
-func DiffIDs(i WithConfigFile) ([]v1.Hash, error) {
-	cfg, err := i.ConfigFile()
-	if err != nil {
-		return nil, err
-	}
-	return cfg.RootFS.DiffIDs, nil
-}
+func DiffIDs(i WithConfigFile) ([]v1.Hash, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // RawConfigFile is a helper for implementing v1.Image
-func RawConfigFile(i WithConfigFile) ([]byte, error) {
-	cfg, err := i.ConfigFile()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(cfg)
-}
+func RawConfigFile(i WithConfigFile) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // WithRawManifest defines the subset of v1.Image used by these helper methods
 type WithRawManifest interface {
@@ -149,22 +120,12 @@ type WithRawManifest interface {
 
 // Digest is a helper for implementing v1.Image
 func Digest(i WithRawManifest) (v1.Hash, error) {
-	mb, err := i.RawManifest()
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	digest, _, err := v1.SHA256(bytes.NewReader(mb))
-	return digest, err
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
 // Manifest is a helper for implementing v1.Image
-func Manifest(i WithRawManifest) (*v1.Manifest, error) {
-	b, err := i.RawManifest()
-	if err != nil {
-		return nil, err
-	}
-	return v1.ParseManifest(bytes.NewReader(b))
-}
+func Manifest(i WithRawManifest) (*v1.Manifest, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // WithManifest defines the subset of v1.Image used by these helper methods
 type WithManifest interface {
@@ -173,62 +134,21 @@ type WithManifest interface {
 }
 
 // RawManifest is a helper for implementing v1.Image
-func RawManifest(i WithManifest) ([]byte, error) {
-	m, err := i.Manifest()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(m)
-}
+func RawManifest(i WithManifest) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // Size is a helper for implementing v1.Image
-func Size(i WithRawManifest) (int64, error) {
-	b, err := i.RawManifest()
-	if err != nil {
-		return -1, err
-	}
-	return int64(len(b)), nil
-}
+func Size(i WithRawManifest) (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // FSLayers is a helper for implementing v1.Image
-func FSLayers(i WithManifest) ([]v1.Hash, error) {
-	m, err := i.Manifest()
-	if err != nil {
-		return nil, err
-	}
-	fsl := make([]v1.Hash, len(m.Layers))
-	for i, l := range m.Layers {
-		fsl[i] = l.Digest
-	}
-	return fsl, nil
-}
+func FSLayers(i WithManifest) ([]v1.Hash, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // BlobSize is a helper for implementing v1.Image
-func BlobSize(i WithManifest, h v1.Hash) (int64, error) {
-	d, err := BlobDescriptor(i, h)
-	if err != nil {
-		return -1, err
-	}
-	return d.Size, nil
-}
+func BlobSize(i WithManifest, h v1.Hash) (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // BlobDescriptor is a helper for implementing v1.Image
 func BlobDescriptor(i WithManifest, h v1.Hash) (*v1.Descriptor, error) {
-	m, err := i.Manifest()
-	if err != nil {
-		return nil, err
-	}
-
-	if m.Config.Digest == h {
-		return &m.Config, nil
-	}
-
-	for _, l := range m.Layers {
-		if l.Digest == h {
-			return &l, nil
-		}
-	}
-	return nil, fmt.Errorf("blob %v not found", h)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // WithManifestAndConfigFile defines the subset of v1.Image used by these helper methods
@@ -242,45 +162,15 @@ type WithManifestAndConfigFile interface {
 // BlobToDiffID is a helper for mapping between compressed
 // and uncompressed blob hashes.
 func BlobToDiffID(i WithManifestAndConfigFile, h v1.Hash) (v1.Hash, error) {
-	blobs, err := FSLayers(i)
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	diffIDs, err := DiffIDs(i)
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	if len(blobs) != len(diffIDs) {
-		return v1.Hash{}, fmt.Errorf("mismatched fs layers (%d) and diff ids (%d)", len(blobs), len(diffIDs))
-	}
-	for i, blob := range blobs {
-		if blob == h {
-			return diffIDs[i], nil
-		}
-	}
-	return v1.Hash{}, fmt.Errorf("unknown blob %v", h)
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
 // DiffIDToBlob is a helper for mapping between uncompressed
 // and compressed blob hashes.
 func DiffIDToBlob(wm WithManifestAndConfigFile, h v1.Hash) (v1.Hash, error) {
-	blobs, err := FSLayers(wm)
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	diffIDs, err := DiffIDs(wm)
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	if len(blobs) != len(diffIDs) {
-		return v1.Hash{}, fmt.Errorf("mismatched fs layers (%d) and diff ids (%d)", len(blobs), len(diffIDs))
-	}
-	for i, diffID := range diffIDs {
-		if diffID == h {
-			return blobs[i], nil
-		}
-	}
-	return v1.Hash{}, fmt.Errorf("unknown diffID %v", h)
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
 // WithDiffID defines the subset of v1.Layer for exposing the DiffID method.
@@ -308,47 +198,15 @@ type Describable interface {
 // CompressedToLayer, UncompressedToLayer, CompressedToImage, or
 // UncompressedToImage.
 func Descriptor(d Describable) (*v1.Descriptor, error) {
+	_ = "STUB: not implemented"
 	// If Describable implements Descriptor itself, return that.
-	if wd, ok := unwrap(d).(withDescriptor); ok {
-		return wd.Descriptor()
-	}
-
-	// If all else fails, compute the descriptor from the individual methods.
-	var (
-		desc v1.Descriptor
-		err  error
-	)
-
-	if desc.Size, err = d.Size(); err != nil {
-		return nil, err
-	}
-	if desc.Digest, err = d.Digest(); err != nil {
-		return nil, err
-	}
-	if desc.MediaType, err = d.MediaType(); err != nil {
-		return nil, err
-	}
-	if wat, ok := d.(withArtifactType); ok {
-		if desc.ArtifactType, err = wat.ArtifactType(); err != nil {
-			return nil, err
-		}
-	} else {
-		if wrm, ok := d.(WithRawManifest); ok && desc.MediaType.IsImage() {
-			mf, _ := Manifest(wrm)
-			// Failing to parse as a manifest should just be ignored.
-			// The manifest might not be valid, and that's okay.
-			if mf != nil {
-				if mf.ArtifactType != "" {
-					desc.ArtifactType = mf.ArtifactType
-				} else {
-					desc.ArtifactType = string(mf.Config.MediaType)
-				}
-			}
-		}
-	}
-
-	return &desc, nil
+	return nil, nil
 }
+
+// If all else fails, compute the descriptor from the individual methods.
+
+// Failing to parse as a manifest should just be ignored.
+// The manifest might not be valid, and that's okay.
 
 type withArtifactType interface {
 	ArtifactType() (string, error)
@@ -364,20 +222,12 @@ type withUncompressedSize interface {
 // by Compressed(). This is potentially expensive and may consume the contents
 // for streaming layers.
 func UncompressedSize(l v1.Layer) (int64, error) {
+	_ = "STUB: not implemented"
 	// If the layer implements UncompressedSize itself, return that.
-	if wus, ok := unwrap(l).(withUncompressedSize); ok {
-		return wus.UncompressedSize()
-	}
-
-	// The layer doesn't implement UncompressedSize, we need to compute it.
-	rc, err := l.Uncompressed()
-	if err != nil {
-		return -1, err
-	}
-	defer rc.Close()
-
-	return io.Copy(io.Discard, rc)
+	return 0, nil
 }
+
+// The layer doesn't implement UncompressedSize, we need to compute it.
 
 type withExists interface {
 	Exists() (bool, error)
@@ -386,58 +236,26 @@ type withExists interface {
 // Exists checks to see if a layer exists. This is a hack to work around the
 // mistakes of the partial package. Don't use this.
 func Exists(l v1.Layer) (bool, error) {
+	_ = "STUB: not implemented"
 	// If the layer implements Exists itself, return that.
-	if we, ok := unwrap(l).(withExists); ok {
-		return we.Exists()
-	}
-
-	// The layer doesn't implement Exists, so we hope that calling Compressed()
-	// is enough to trigger an error if the layer does not exist.
-	rc, err := l.Compressed()
-	if err != nil {
-		return false, err
-	}
-	defer rc.Close()
-
-	// We may want to try actually reading a single byte, but if we need to do
-	// that, we should just fix this hack.
-	return true, nil
+	return false, nil
 }
+
+// The layer doesn't implement Exists, so we hope that calling Compressed()
+// is enough to trigger an error if the layer does not exist.
+
+// We may want to try actually reading a single byte, but if we need to do
+// that, we should just fix this hack.
 
 // Recursively unwrap our wrappers so that we can check for the original implementation.
 // We might want to expose this?
-func unwrap(i any) any {
-	if ule, ok := i.(*uncompressedLayerExtender); ok {
-		return unwrap(ule.UncompressedLayer)
-	}
-	if cle, ok := i.(*compressedLayerExtender); ok {
-		return unwrap(cle.CompressedLayer)
-	}
-	if uie, ok := i.(*uncompressedImageExtender); ok {
-		return unwrap(uie.UncompressedImageCore)
-	}
-	if cie, ok := i.(*compressedImageExtender); ok {
-		return unwrap(cie.CompressedImageCore)
-	}
-	return i
-}
+func unwrap(i any) any { _ = "STUB: not implemented"; return *new(any) }
 
 // ArtifactType returns the artifact type for the given manifest.
 //
 // If the manifest reports its own artifact type, that's returned, otherwise
 // the manifest is parsed and, if successful, its config.mediaType is returned.
-func ArtifactType(w WithManifest) (string, error) {
-	if wat, ok := w.(withArtifactType); ok {
-		return wat.ArtifactType()
-	}
-	mf, _ := w.Manifest()
-	// Failing to parse as a manifest should just be ignored.
-	// The manifest might not be valid, and that's okay.
-	if mf != nil {
-		if mf.ArtifactType != "" {
-			return mf.ArtifactType, nil
-		}
-		return string(mf.Config.MediaType), nil
-	}
-	return "", nil
-}
+func ArtifactType(w WithManifest) (string, error) { _ = "STUB: not implemented"; return "", nil }
+
+// Failing to parse as a manifest should just be ignored.
+// The manifest might not be valid, and that's okay.

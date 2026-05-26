@@ -17,7 +17,6 @@ package match
 
 import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	imagespec "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 // Matcher function that is given a v1.Descriptor, and returns whether or
@@ -29,64 +28,17 @@ type Matcher func(desc v1.Descriptor) bool
 //	"org.opencontainers.image.ref.name" annotation:
 //
 // github.com/opencontainers/image-spec/blob/v1.0.1/annotations.md#pre-defined-annotation-keys
-func Name(name string) Matcher {
-	return Annotation(imagespec.AnnotationRefName, name)
-}
+func Name(name string) Matcher { _ = "STUB: not implemented"; return *new(Matcher) }
 
 // Annotation returns a match.Matcher that matches based on the provided annotation.
-func Annotation(key, value string) Matcher {
-	return func(desc v1.Descriptor) bool {
-		if desc.Annotations == nil {
-			return false
-		}
-		if aValue, ok := desc.Annotations[key]; ok && aValue == value {
-			return true
-		}
-		return false
-	}
-}
+func Annotation(key, value string) Matcher { _ = "STUB: not implemented"; return *new(Matcher) }
 
 // Platforms returns a match.Matcher that matches on any one of the provided platforms.
 // Ignores any descriptors that do not have a platform.
-func Platforms(platforms ...v1.Platform) Matcher {
-	return func(desc v1.Descriptor) bool {
-		if desc.Platform == nil {
-			return false
-		}
-		for _, platform := range platforms {
-			if desc.Platform.Equals(platform) {
-				return true
-			}
-		}
-		return false
-	}
-}
+func Platforms(platforms ...v1.Platform) Matcher { _ = "STUB: not implemented"; return *new(Matcher) }
 
 // MediaTypes returns a match.Matcher that matches at least one of the provided media types.
-func MediaTypes(mediaTypes ...string) Matcher {
-	mts := map[string]bool{}
-	for _, media := range mediaTypes {
-		mts[media] = true
-	}
-	return func(desc v1.Descriptor) bool {
-		if desc.MediaType == "" {
-			return false
-		}
-		if _, ok := mts[string(desc.MediaType)]; ok {
-			return true
-		}
-		return false
-	}
-}
+func MediaTypes(mediaTypes ...string) Matcher { _ = "STUB: not implemented"; return *new(Matcher) }
 
 // Digests returns a match.Matcher that matches at least one of the provided Digests
-func Digests(digests ...v1.Hash) Matcher {
-	digs := map[v1.Hash]bool{}
-	for _, digest := range digests {
-		digs[digest] = true
-	}
-	return func(desc v1.Descriptor) bool {
-		_, ok := digs[desc.Digest]
-		return ok
-	}
-}
+func Digests(digests ...v1.Hash) Matcher { _ = "STUB: not implemented"; return *new(Matcher) }

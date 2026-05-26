@@ -15,20 +15,12 @@
 package remote
 
 import (
-	"bytes"
 	"context"
-	"errors"
-	"fmt"
-	"net/http"
-	"net/url"
 	"sync"
 
-	"github.com/google/go-containerregistry/pkg/logs"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/partial"
-	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
-	"github.com/google/go-containerregistry/pkg/v1/stream"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 	"golang.org/x/sync/errgroup"
 )
@@ -47,48 +39,22 @@ type workers struct {
 	errors sync.Map
 }
 
-func nop() error {
+func nop() error { _ = "STUB: not implemented"; return nil }
+
+func (w *workers) err(digest v1.Hash) error { _ = "STUB: not implemented"; return nil }
+
+func (w *workers) Do(digest v1.Hash, f func() error) error {
+	_ = "STUB: not implemented"
+	// We don't care if it was loaded or not because the sync.Once will do it for us.
 	return nil
 }
 
-func (w *workers) err(digest v1.Hash) error {
-	v, ok := w.errors.Load(digest)
-	if !ok || v == nil {
-		return nil
-	}
-	return v.(error)
-}
-
-func (w *workers) Do(digest v1.Hash, f func() error) error {
-	// We don't care if it was loaded or not because the sync.Once will do it for us.
-	once, _ := w.onces.LoadOrStore(digest, &sync.Once{})
-
-	once.(*sync.Once).Do(func() {
-		w.errors.Store(digest, f())
-	})
-
-	err := w.err(digest)
-	if err != nil {
-		// Allow this to be retried by another caller.
-		w.onces.Delete(digest)
-	}
-	return err
-}
+// Allow this to be retried by another caller.
 
 func (w *workers) Stream(layer v1.Layer, f func() error) error {
+	_ = "STUB: not implemented"
 	// We don't care if it was loaded or not because the sync.Once will do it for us.
-	once, _ := w.onces.LoadOrStore(layer, &sync.Once{})
-
-	once.(*sync.Once).Do(func() {
-		w.errors.Store(layer, f())
-	})
-
-	v, ok := w.errors.Load(layer)
-	if !ok || v == nil {
-		return nil
-	}
-
-	return v.(error)
+	return nil
 }
 
 type Pusher struct {
@@ -98,96 +64,42 @@ type Pusher struct {
 	writers sync.Map
 }
 
-func NewPusher(options ...Option) (*Pusher, error) {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return nil, err
-	}
+func NewPusher(options ...Option) (*Pusher, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	return newPusher(o), nil
-}
-
-func newPusher(o *options) *Pusher {
-	if o.pusher != nil {
-		return o.pusher
-	}
-	return &Pusher{
-		o: o,
-	}
-}
+func newPusher(o *options) *Pusher { _ = "STUB: not implemented"; return nil }
 
 func (p *Pusher) writer(ctx context.Context, repo name.Repository, o *options) (*repoWriter, error) {
-	v, _ := p.writers.LoadOrStore(repo, &repoWriter{
-		repo: repo,
-		o:    o,
-	})
-	rw := v.(*repoWriter)
-	return rw, rw.init(ctx)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (p *Pusher) Put(ctx context.Context, ref name.Reference, t Taggable) error {
-	w, err := p.writer(ctx, ref.Context(), p.o)
-	if err != nil {
-		return err
-	}
-
-	m, err := taggableToManifest(t)
-	if err != nil {
-		return err
-	}
-
-	return w.commitManifest(ctx, ref, m)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (p *Pusher) Push(ctx context.Context, ref name.Reference, t Taggable) error {
-	w, err := p.writer(ctx, ref.Context(), p.o)
-	if err != nil {
-		return err
-	}
-	return w.writeManifest(ctx, ref, t)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (p *Pusher) Upload(ctx context.Context, repo name.Repository, l v1.Layer) error {
-	w, err := p.writer(ctx, repo, p.o)
-	if err != nil {
-		return err
-	}
-	return w.writeLayer(ctx, l)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (p *Pusher) Delete(ctx context.Context, ref name.Reference) error {
+	_ = "STUB: not implemented"
 	// Use a transport scoped for delete. Requesting DeleteScope (which
 	// includes the "delete" action) allows registries that require an
 	// explicit delete permission—such as IBM Cloud Container Registry—to
 	// grant access.
-	client, err := makeDeleteClient(ctx, ref.Context(), p.o)
-	if err != nil {
-		return err
-	}
-
-	u := url.URL{
-		Scheme: ref.Context().Scheme(),
-		Host:   ref.Context().RegistryStr(),
-		Path:   fmt.Sprintf("/v2/%s/manifests/%s", ref.Context().RepositoryStr(), ref.Identifier()),
-	}
-
-	req, err := http.NewRequest(http.MethodDelete, u.String(), nil)
-	if err != nil {
-		return err
-	}
-
-	resp, err := client.Do(req.WithContext(ctx))
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	return transport.CheckError(resp, http.StatusOK, http.StatusAccepted)
-
-	// TODO(jason): If the manifest had a `subject`, and if the registry
-	// doesn't support Referrers, update the index pointed to by the
-	// subject's fallback tag to remove the descriptor for this manifest.
+	return nil
 }
+
+// TODO(jason): If the manifest had a `subject`, and if the registry
+// doesn't support Referrers, update the index pointed to by the
+// subject's fallback tag to remove the descriptor for this manifest.
 
 type repoWriter struct {
 	repo name.Repository
@@ -210,32 +122,26 @@ func (rw *repoWriter) init(ctx context.Context) error {
 }
 
 func (rw *repoWriter) writeDeps(ctx context.Context, m manifest) error {
-	if img, ok := m.(v1.Image); ok {
-		return rw.writeLayers(ctx, img)
-	}
-
-	if idx, ok := m.(v1.ImageIndex); ok {
-		return rw.writeChildren(ctx, idx)
-	}
-
-	// This has no deps, not an error (e.g. something you want to just PUT).
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// This has no deps, not an error (e.g. something you want to just PUT).
 
 type describable struct {
 	desc v1.Descriptor
 }
 
 func (d describable) Digest() (v1.Hash, error) {
-	return d.desc.Digest, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
-func (d describable) Size() (int64, error) {
-	return d.desc.Size, nil
-}
+func (d describable) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 func (d describable) MediaType() (types.MediaType, error) {
-	return d.desc.MediaType, nil
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }
 
 type tagManifest struct {
@@ -244,334 +150,79 @@ type tagManifest struct {
 }
 
 func taggableToManifest(t Taggable) (manifest, error) {
-	if m, ok := t.(manifest); ok {
-		return m, nil
-	}
-
-	if d, ok := t.(*Descriptor); ok {
-		if d.MediaType.IsIndex() {
-			return d.ImageIndex()
-		}
-
-		if d.MediaType.IsImage() {
-			return d.Image()
-		}
-
-		if d.MediaType.IsSchema1() {
-			return d.Schema1()
-		}
-
-		return tagManifest{t, describable{d.toDesc()}}, nil
-	}
-
-	desc := v1.Descriptor{
-		// A reasonable default if Taggable doesn't implement MediaType.
-		MediaType: types.DockerManifestSchema2,
-	}
-
-	b, err := t.RawManifest()
-	if err != nil {
-		return nil, err
-	}
-
-	if wmt, ok := t.(withMediaType); ok {
-		desc.MediaType, err = wmt.MediaType()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	desc.Digest, desc.Size, err = v1.SHA256(bytes.NewReader(b))
-	if err != nil {
-		return nil, err
-	}
-
-	return tagManifest{t, describable{desc}}, nil
+	_ = "STUB: not implemented"
+	return *new(manifest), nil
 }
+
+// A reasonable default if Taggable doesn't implement MediaType.
 
 func (rw *repoWriter) writeManifest(ctx context.Context, ref name.Reference, t Taggable) error {
-	m, err := taggableToManifest(t)
-	if err != nil {
-		return err
-	}
-
-	needDeps := true
-
-	digest, err := m.Digest()
-	if errors.Is(err, stream.ErrNotComputed) {
-		if err := rw.writeDeps(ctx, m); err != nil {
-			return err
-		}
-
-		needDeps = false
-
-		digest, err = m.Digest()
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
-	}
-
-	// This may be a lazy child where we have no ref until digest is computed.
-	if ref == nil {
-		ref = rw.repo.Digest(digest.String())
-	}
-
-	// For tags, we want to do this check outside of our Work.Do closure because
-	// we don't want to dedupe based on the manifest digest.
-	_, byTag := ref.(name.Tag)
-	if byTag {
-		if exists, err := rw.manifestExists(ctx, ref, t); err != nil {
-			return err
-		} else if exists {
-			return nil
-		}
-	}
-
-	// The following work.Do will get deduped by digest, so it won't happen unless
-	// this tag happens to be the first commitManifest to run for that digest.
-	needPut := byTag
-
-	if err := rw.work.Do(digest, func() error {
-		if !byTag {
-			if exists, err := rw.manifestExists(ctx, ref, t); err != nil {
-				return err
-			} else if exists {
-				return nil
-			}
-		}
-
-		if needDeps {
-			if err := rw.writeDeps(ctx, m); err != nil {
-				return err
-			}
-		}
-
-		needPut = false
-		return rw.commitManifest(ctx, ref, m)
-	}); err != nil {
-		return err
-	}
-
-	if !needPut {
-		return nil
-	}
-
-	// Only runs for tags that got deduped by digest.
-	return rw.commitManifest(ctx, ref, m)
+	_ = "STUB: not implemented"
+	return nil
 }
 
+// This may be a lazy child where we have no ref until digest is computed.
+
+// For tags, we want to do this check outside of our Work.Do closure because
+// we don't want to dedupe based on the manifest digest.
+
+// The following work.Do will get deduped by digest, so it won't happen unless
+// this tag happens to be the first commitManifest to run for that digest.
+
+// Only runs for tags that got deduped by digest.
+
 func (rw *repoWriter) writeChildren(ctx context.Context, idx v1.ImageIndex) error {
-	children, err := partial.Manifests(idx)
-	if err != nil {
-		return err
-	}
-
-	g, ctx := errgroup.WithContext(ctx)
-	g.SetLimit(rw.o.jobs)
-
-	for _, child := range children {
-		child := child
-		if err := rw.writeChild(ctx, child, g); err != nil {
-			return err
-		}
-	}
-
-	return g.Wait()
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rw *repoWriter) writeChild(ctx context.Context, child partial.Describable, g *errgroup.Group) error {
-	switch child := child.(type) {
-	case v1.ImageIndex:
-		// For recursive index, we want to do a depth-first launching of goroutines
-		// to avoid deadlocking.
-		//
-		// Note that this is rare, so the impact of this should be really small.
-		return rw.writeManifest(ctx, nil, child)
-	case v1.Image:
-		g.Go(func() error {
-			return rw.writeManifest(ctx, nil, child)
-		})
-	case v1.Layer:
-		g.Go(func() error {
-			return rw.writeLayer(ctx, child)
-		})
-	default:
-		// This can't happen.
-		return fmt.Errorf("encountered unknown child: %T", child)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// For recursive index, we want to do a depth-first launching of goroutines
+// to avoid deadlocking.
+//
+// Note that this is rare, so the impact of this should be really small.
+
+// This can't happen.
 
 // TODO: Consider caching some representation of the tags/digests in the destination
 // repository as a hint to avoid this optimistic check in cases where we will most
 // likely have to do a PUT anyway, e.g. if we are overwriting a tag we just wrote.
 func (rw *repoWriter) manifestExists(ctx context.Context, ref name.Reference, t Taggable) (bool, error) {
-	f := &fetcher{
-		target: ref.Context(),
-		client: rw.w.client,
-	}
-
-	m, err := taggableToManifest(t)
-	if err != nil {
-		return false, err
-	}
-
-	digest, err := m.Digest()
-	if err != nil {
-		// Possibly due to streaming layers.
-		return false, nil
-	}
-	got, err := f.headManifest(ctx, ref, allManifestMediaTypes)
-	if err != nil {
-		var terr *transport.Error
-		if errors.As(err, &terr) {
-			if terr.StatusCode == http.StatusNotFound {
-				return false, nil
-			}
-
-			// We treat a 403 here as non-fatal because this existence check is an optimization and
-			// some registries will return a 403 instead of a 404 in certain situations.
-			// E.g. https://jfrog.atlassian.net/browse/RTFACT-13797
-			if terr.StatusCode == http.StatusForbidden {
-				logs.Debug.Printf("manifestExists unexpected 403: %v", err)
-				return false, nil
-			}
-		}
-
-		return false, err
-	}
-
-	if digest != got.Digest {
-		// Mark that we saw this digest in the registry so we don't have to check it again.
-		rw.work.Do(got.Digest, nop)
-
-		return false, nil
-	}
-
-	if tag, ok := ref.(name.Tag); ok {
-		logs.Progress.Printf("existing manifest: %s@%s", tag.Identifier(), got.Digest)
-	} else {
-		logs.Progress.Print("existing manifest: ", got.Digest)
-	}
-
-	return true, nil
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
-func (rw *repoWriter) commitManifest(ctx context.Context, ref name.Reference, m manifest) error {
-	if rw.o.progress != nil {
-		size, err := m.Size()
-		if err != nil {
-			return err
-		}
-		rw.o.progress.total(size)
-	}
+// Possibly due to streaming layers.
 
-	return rw.w.commitManifest(ctx, m, ref)
+// We treat a 403 here as non-fatal because this existence check is an optimization and
+// some registries will return a 403 instead of a 404 in certain situations.
+// E.g. https://jfrog.atlassian.net/browse/RTFACT-13797
+
+// Mark that we saw this digest in the registry so we don't have to check it again.
+
+func (rw *repoWriter) commitManifest(ctx context.Context, ref name.Reference, m manifest) error {
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rw *repoWriter) writeLayers(pctx context.Context, img v1.Image) error {
-	ls, err := img.Layers()
-	if err != nil {
-		return err
-	}
-
-	g, ctx := errgroup.WithContext(pctx)
-	g.SetLimit(rw.o.jobs)
-
-	for _, l := range ls {
-		l := l
-
-		g.Go(func() error {
-			return rw.writeLayer(ctx, l)
-		})
-	}
-
-	mt, err := img.MediaType()
-	if err != nil {
-		return err
-	}
-
-	if mt.IsSchema1() {
-		return g.Wait()
-	}
-
-	cl, err := partial.ConfigLayer(img)
-	if errors.Is(err, stream.ErrNotComputed) {
-		if err := g.Wait(); err != nil {
-			return err
-		}
-
-		cl, err := partial.ConfigLayer(img)
-		if err != nil {
-			return err
-		}
-
-		return rw.writeLayer(pctx, cl)
-	} else if err != nil {
-		return err
-	}
-
-	g.Go(func() error {
-		return rw.writeLayer(ctx, cl)
-	})
-
-	return g.Wait()
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rw *repoWriter) writeLayer(ctx context.Context, l v1.Layer) error {
+	_ = "STUB: not implemented"
 	// Skip any non-distributable things.
-	mt, err := l.MediaType()
-	if err != nil {
-		return err
-	}
-	if !mt.IsDistributable() && !rw.o.allowNondistributableArtifacts {
-		return nil
-	}
-
-	digest, err := l.Digest()
-	if err != nil {
-		if errors.Is(err, stream.ErrNotComputed) {
-			return rw.lazyWriteLayer(ctx, l)
-		}
-		return err
-	}
-
-	return rw.work.Do(digest, func() error {
-		if rw.o.progress != nil {
-			size, err := l.Size()
-			if err != nil {
-				return err
-			}
-			rw.o.progress.total(size)
-		}
-		return rw.w.uploadOne(ctx, l)
-	})
+	return nil
 }
 
 func (rw *repoWriter) lazyWriteLayer(ctx context.Context, l v1.Layer) error {
-	return rw.work.Stream(l, func() error {
-		if err := rw.w.uploadOne(ctx, l); err != nil {
-			return err
-		}
-
-		// Mark this upload completed.
-		digest, err := l.Digest()
-		if err != nil {
-			return err
-		}
-
-		rw.work.Do(digest, nop)
-
-		if rw.o.progress != nil {
-			size, err := l.Size()
-			if err != nil {
-				return err
-			}
-			rw.o.progress.total(size)
-		}
-
-		return nil
-	})
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Mark this upload completed.

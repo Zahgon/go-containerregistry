@@ -16,14 +16,9 @@
 package stream
 
 import (
-	"bufio"
-	"compress/gzip"
-	"crypto"
-	"encoding/hex"
 	"errors"
 	"hash"
 	"io"
-	"os"
 	"sync"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -59,104 +54,54 @@ type LayerOption func(*Layer)
 
 // WithCompressionLevel sets the gzip compression. See `gzip.NewWriterLevel` for possible values.
 func WithCompressionLevel(level int) LayerOption {
-	return func(l *Layer) {
-		l.compression = level
-	}
+	_ = "STUB: not implemented"
+	return *new(LayerOption)
 }
 
 // WithMediaType is a functional option for overriding the layer's media type.
 func WithMediaType(mt types.MediaType) LayerOption {
-	return func(l *Layer) {
-		l.mediaType = mt
-	}
+	_ = "STUB: not implemented"
+	return *new(LayerOption)
 }
 
 // NewLayer creates a Layer from an io.ReadCloser.
-func NewLayer(rc io.ReadCloser, opts ...LayerOption) *Layer {
-	layer := &Layer{
-		blob:        rc,
-		compression: gzip.BestSpeed,
-		// We use DockerLayer for now as uncompressed layers
-		// are unimplemented
-		mediaType: types.DockerLayer,
-	}
+func NewLayer(rc io.ReadCloser, opts ...LayerOption) *Layer { _ = "STUB: not implemented"; return nil }
 
-	for _, opt := range opts {
-		opt(layer)
-	}
-
-	return layer
-}
+// We use DockerLayer for now as uncompressed layers
+// are unimplemented
 
 // Digest implements v1.Layer.
-func (l *Layer) Digest() (v1.Hash, error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	if l.digest == nil {
-		return v1.Hash{}, ErrNotComputed
-	}
-	return *l.digest, nil
-}
+func (l *Layer) Digest() (v1.Hash, error) { _ = "STUB: not implemented"; return *new(v1.Hash), nil }
 
 // DiffID implements v1.Layer.
-func (l *Layer) DiffID() (v1.Hash, error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	if l.diffID == nil {
-		return v1.Hash{}, ErrNotComputed
-	}
-	return *l.diffID, nil
-}
+func (l *Layer) DiffID() (v1.Hash, error) { _ = "STUB: not implemented"; return *new(v1.Hash), nil }
 
 // Size implements v1.Layer.
-func (l *Layer) Size() (int64, error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	if l.size == 0 {
-		return 0, ErrNotComputed
-	}
-	return l.size, nil
-}
+func (l *Layer) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // MediaType implements v1.Layer
 func (l *Layer) MediaType() (types.MediaType, error) {
-	return l.mediaType, nil
+	_ = "STUB: not implemented"
+	return *
+
+	// Uncompressed implements v1.Layer.
+	new(types.MediaType), nil
 }
 
-// Uncompressed implements v1.Layer.
 func (l *Layer) Uncompressed() (io.ReadCloser, error) {
-	return nil, errors.New("NYI: stream.Layer.Uncompressed is not implemented")
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // Compressed implements v1.Layer.
 func (l *Layer) Compressed() (io.ReadCloser, error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	if l.consumed {
-		return nil, ErrConsumed
-	}
-	return newCompressedReader(l)
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // finalize sets the layer to consumed and computes all hash and size values.
 func (l *Layer) finalize(uncompressed, compressed hash.Hash, size int64) error {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-
-	diffID, err := v1.NewHash("sha256:" + hex.EncodeToString(uncompressed.Sum(nil)))
-	if err != nil {
-		return err
-	}
-	l.diffID = &diffID
-
-	digest, err := v1.NewHash("sha256:" + hex.EncodeToString(compressed.Sum(nil)))
-	if err != nil {
-		return err
-	}
-	l.digest = &digest
-
-	l.size = size
-	l.consumed = true
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -166,110 +111,68 @@ type compressedReader struct {
 }
 
 func newCompressedReader(l *Layer) (*compressedReader, error) {
+	_ = "STUB: not implemented"
 	// Collect digests of compressed and uncompressed stream and size of
 	// compressed stream.
-	h := crypto.SHA256.New()
-	zh := crypto.SHA256.New()
-	count := &countWriter{}
-
-	// gzip.Writer writes to the output stream via pipe, a hasher to
-	// capture compressed digest, and a countWriter to capture compressed
-	// size.
-	pr, pw := io.Pipe()
-
-	// Write compressed bytes to be read by the pipe.Reader, hashed by zh, and counted by count.
-	mw := io.MultiWriter(pw, zh, count)
-
-	// Buffer the output of the gzip writer so we don't have to wait on pr to keep writing.
-	// 64K ought to be small enough for anybody.
-	bw := bufio.NewWriterSize(mw, 2<<16)
-	zw, err := gzip.NewWriterLevel(bw, l.compression)
-	if err != nil {
-		return nil, err
-	}
-
-	doneDigesting := make(chan struct{})
-
-	cr := &compressedReader{
-		pr: pr,
-		closer: func() error {
-			// Immediately close pw without error. There are three ways to get
-			// here.
-			//
-			// 1. There was a copy error due from the underlying reader, in which
-			//    case the error will not be overwritten.
-			// 2. Copying from the underlying reader completed successfully.
-			// 3. Close has been called before the underlying reader has been
-			//    fully consumed. In this case pw must be closed in order to
-			//    keep the flush of bw from blocking indefinitely.
-			//
-			// NOTE: pw.Close never returns an error. The signature is only to
-			// implement io.Closer.
-			_ = pw.Close()
-
-			// Close the inner ReadCloser.
-			//
-			// NOTE: net/http will call close on success, so if we've already
-			// closed the inner rc, it's not an error.
-			if err := l.blob.Close(); err != nil && !errors.Is(err, os.ErrClosed) {
-				return err
-			}
-
-			// Finalize layer with its digest and size values.
-			<-doneDigesting
-			return l.finalize(h, zh, count.n)
-		},
-	}
-	go func() {
-		// Copy blob into the gzip writer, which also hashes and counts the
-		// size of the compressed output, and hasher of the raw contents.
-		_, copyErr := io.Copy(io.MultiWriter(h, zw), l.blob)
-
-		// Close the gzip writer once copying is done. If this is done in the
-		// Close method of compressedReader instead, then it can cause a panic
-		// when the compressedReader is closed before the blob is fully
-		// consumed and io.Copy in this goroutine is still blocking.
-		closeErr := zw.Close()
-
-		// Check errors from writing and closing streams.
-		if copyErr != nil {
-			close(doneDigesting)
-			pw.CloseWithError(copyErr)
-			return
-		}
-		if closeErr != nil {
-			close(doneDigesting)
-			pw.CloseWithError(closeErr)
-			return
-		}
-
-		// Flush the buffer once all writes are complete to the gzip writer.
-		if err := bw.Flush(); err != nil {
-			close(doneDigesting)
-			pw.CloseWithError(err)
-			return
-		}
-
-		// Notify closer that digests are done being written.
-		close(doneDigesting)
-
-		// Close the compressed reader to calculate digest/diffID/size. This
-		// will cause pr to return EOF which will cause readers of the
-		// Compressed stream to finish reading.
-		pw.CloseWithError(cr.Close())
-	}()
-
-	return cr, nil
+	return nil, nil
 }
 
-func (cr *compressedReader) Read(b []byte) (int, error) { return cr.pr.Read(b) }
+// gzip.Writer writes to the output stream via pipe, a hasher to
+// capture compressed digest, and a countWriter to capture compressed
+// size.
 
-func (cr *compressedReader) Close() error { return cr.closer() }
+// Write compressed bytes to be read by the pipe.Reader, hashed by zh, and counted by count.
 
-// countWriter counts bytes written to it.
+// Buffer the output of the gzip writer so we don't have to wait on pr to keep writing.
+// 64K ought to be small enough for anybody.
+
+// Immediately close pw without error. There are three ways to get
+// here.
+//
+// 1. There was a copy error due from the underlying reader, in which
+//    case the error will not be overwritten.
+// 2. Copying from the underlying reader completed successfully.
+// 3. Close has been called before the underlying reader has been
+//    fully consumed. In this case pw must be closed in order to
+//    keep the flush of bw from blocking indefinitely.
+//
+// NOTE: pw.Close never returns an error. The signature is only to
+// implement io.Closer.
+
+// Close the inner ReadCloser.
+//
+// NOTE: net/http will call close on success, so if we've already
+// closed the inner rc, it's not an error.
+
+// Finalize layer with its digest and size values.
+
+// Copy blob into the gzip writer, which also hashes and counts the
+// size of the compressed output, and hasher of the raw contents.
+
+// Close the gzip writer once copying is done. If this is done in the
+// Close method of compressedReader instead, then it can cause a panic
+// when the compressedReader is closed before the blob is fully
+// consumed and io.Copy in this goroutine is still blocking.
+
+// Check errors from writing and closing streams.
+
+// Flush the buffer once all writes are complete to the gzip writer.
+
+// Notify closer that digests are done being written.
+
+// Close the compressed reader to calculate digest/diffID/size. This
+// will cause pr to return EOF which will cause readers of the
+// Compressed stream to finish reading.
+
+func (cr *compressedReader) Read(b []byte) (int, error) { _ = "STUB: not implemented"; return 0, nil }
+
+func (cr *compressedReader) Close() error {
+	_ = "STUB: not implemented"
+
+	// countWriter counts bytes written to it.
+	return nil
+}
+
 type countWriter struct{ n int64 }
 
-func (c *countWriter) Write(p []byte) (int, error) {
-	c.n += int64(len(p))
-	return len(p), nil
-}
+func (c *countWriter) Write(p []byte) (int, error) { _ = "STUB: not implemented"; return 0, nil }

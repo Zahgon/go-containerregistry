@@ -24,24 +24,15 @@ type multiKeychain struct {
 var _ (Keychain) = (*multiKeychain)(nil)
 
 // NewMultiKeychain composes a list of keychains into one new keychain.
-func NewMultiKeychain(kcs ...Keychain) Keychain {
-	return &multiKeychain{keychains: kcs}
-}
+func NewMultiKeychain(kcs ...Keychain) Keychain { _ = "STUB: not implemented"; return *new(Keychain) }
 
 // Resolve implements Keychain.
 func (mk *multiKeychain) Resolve(target Resource) (Authenticator, error) {
-	return mk.ResolveContext(context.Background(), target)
+	_ = "STUB: not implemented"
+	return *new(Authenticator), nil
 }
 
 func (mk *multiKeychain) ResolveContext(ctx context.Context, target Resource) (Authenticator, error) {
-	for _, kc := range mk.keychains {
-		auth, err := Resolve(ctx, kc, target)
-		if err != nil {
-			return nil, err
-		}
-		if auth != Anonymous {
-			return auth, nil
-		}
-	}
-	return Anonymous, nil
+	_ = "STUB: not implemented"
+	return *new(Authenticator), nil
 }

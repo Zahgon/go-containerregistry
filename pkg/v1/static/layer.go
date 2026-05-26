@@ -15,7 +15,6 @@
 package static
 
 import (
-	"bytes"
 	"io"
 	"sync"
 
@@ -27,7 +26,8 @@ import (
 //
 // Contents will not be compressed.
 func NewLayer(b []byte, mt types.MediaType) v1.Layer {
-	return &staticLayer{b: b, mt: mt}
+	_ = "STUB: not implemented"
+	return *new(v1.Layer)
 }
 
 type staticLayer struct {
@@ -39,30 +39,30 @@ type staticLayer struct {
 }
 
 func (l *staticLayer) Digest() (v1.Hash, error) {
-	var err error
+	_ = "STUB: not implemented"
+
 	// Only calculate digest the first time we're asked.
-	l.once.Do(func() {
-		l.h, _, err = v1.SHA256(bytes.NewReader(l.b))
-	})
-	return l.h, err
+	return *new(v1.Hash), nil
 }
 
 func (l *staticLayer) DiffID() (v1.Hash, error) {
-	return l.Digest()
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
 func (l *staticLayer) Compressed() (io.ReadCloser, error) {
-	return io.NopCloser(bytes.NewReader(l.b)), nil
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 func (l *staticLayer) Uncompressed() (io.ReadCloser, error) {
-	return io.NopCloser(bytes.NewReader(l.b)), nil
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
-func (l *staticLayer) Size() (int64, error) {
-	return int64(len(l.b)), nil
-}
+func (l *staticLayer) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 func (l *staticLayer) MediaType() (types.MediaType, error) {
-	return l.mt, nil
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }

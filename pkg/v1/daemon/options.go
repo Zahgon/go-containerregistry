@@ -47,71 +47,30 @@ var defaultClient = func() (Client, error) {
 	return client.New(client.FromEnv)
 }
 
-func makeOptions(opts ...Option) (*options, error) {
-	o := &options{
-		bufferMode: bufferMemory,
-		ctx:        context.Background(),
-	}
-	for _, opt := range opts {
-		opt(o)
-	}
-
-	if o.client == nil {
-		apiClient, err := defaultClient()
-		if err != nil {
-			return nil, err
-		}
-		o.client = apiClient
-	}
-	_, _ = o.client.Ping(o.ctx, client.PingOptions{
-		NegotiateAPIVersion: true,
-	})
-
-	return o, nil
-}
+func makeOptions(opts ...Option) (*options, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // WithBufferedOpener buffers the entire image into memory.
-func WithBufferedOpener() Option {
-	return func(o *options) {
-		o.bufferMode = bufferMemory
-	}
-}
+func WithBufferedOpener() Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithUnbufferedOpener streams the image to avoid buffering it.
 // Each access triggers a new image save.
-func WithUnbufferedOpener() Option {
-	return func(o *options) {
-		o.bufferMode = bufferNone
-	}
-}
+func WithUnbufferedOpener() Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithFileBufferedOpener buffers the image to a temporary file on disk.
 // This avoids holding the entire image in memory while still only
 // performing a single image save. The temporary file is cleaned up via
 // runtime.AddCleanup on the imageOpener.
-func WithFileBufferedOpener() Option {
-	return func(o *options) {
-		o.bufferMode = bufferFile
-	}
-}
+func WithFileBufferedOpener() Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithClient is a functional option to allow injecting a docker client.
 //
 // By default, github.com/docker/docker/client.FromEnv is used.
-func WithClient(client Client) Option {
-	return func(o *options) {
-		o.client = client
-	}
-}
+func WithClient(client Client) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithContext is a functional option to pass through a context.Context.
 //
 // By default, context.Background() is used.
-func WithContext(ctx context.Context) Option {
-	return func(o *options) {
-		o.ctx = ctx
-	}
-}
+func WithContext(ctx context.Context) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // Client represents the subset of a docker client that the daemon
 // package uses.

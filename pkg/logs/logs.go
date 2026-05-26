@@ -34,6 +34,4 @@ var (
 // Enabled checks to see if the logger's writer is set to something other
 // than io.Discard. This allows callers to avoid expensive operations
 // that will end up in /dev/null anyway.
-func Enabled(l *log.Logger) bool {
-	return l.Writer() != io.Discard
-}
+func Enabled(l *log.Logger) bool { _ = "STUB: not implemented"; return false }

@@ -22,10 +22,8 @@ import (
 	acr "github.com/gaganhr94/docker-credential-acr/pkg/credhelper"
 	"github.com/google/go-containerregistry/pkg/authn"
 	kauth "github.com/google/go-containerregistry/pkg/authn/kubernetes"
-	"github.com/google/go-containerregistry/pkg/v1/google"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 var (
@@ -40,34 +38,16 @@ type Options = kauth.Options
 // scoped by the provided Options.  It speaks to Kubernetes through the provided
 // client interface.
 func New(ctx context.Context, client kubernetes.Interface, opt Options) (authn.Keychain, error) {
-	k8s, err := kauth.New(ctx, client, kauth.Options(opt))
-	if err != nil {
-		return nil, err
-	}
-
-	return authn.NewMultiKeychain(
-		k8s,
-		authn.DefaultKeychain,
-		google.Keychain,
-		amazonKeychain,
-		azureKeychain,
-	), nil
+	_ = "STUB: not implemented"
+	return *new(authn.Keychain), nil
 }
 
 // NewInCluster returns a new authn.Keychain suitable for resolving image references as
 // scoped by the provided Options, constructing a kubernetes.Interface based on in-cluster
 // authentication.
 func NewInCluster(ctx context.Context, opt Options) (authn.Keychain, error) {
-	clusterConfig, err := rest.InClusterConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := kubernetes.NewForConfig(clusterConfig)
-	if err != nil {
-		return nil, err
-	}
-	return New(ctx, client, opt)
+	_ = "STUB: not implemented"
+	return *new(authn.Keychain), nil
 }
 
 // NewNoClient returns a new authn.Keychain that supports the portions of the K8s keychain
@@ -79,27 +59,13 @@ func NewInCluster(ctx context.Context, opt Options) (authn.Keychain, error) {
 // remains is an interesting sweet spot: this variant can serve as a credential provider
 // for all of the major public clouds, but in library form (vs. an executable you exec).
 func NewNoClient(ctx context.Context) (authn.Keychain, error) {
-	return authn.NewMultiKeychain(
-		authn.DefaultKeychain,
-		google.Keychain,
-		amazonKeychain,
-		azureKeychain,
-	), nil
+	_ = "STUB: not implemented"
+	return *new(authn.Keychain), nil
 }
 
 // NewFromPullSecrets returns a new authn.Keychain suitable for resolving image references as
 // scoped by the pull secrets.
 func NewFromPullSecrets(ctx context.Context, pullSecrets []corev1.Secret) (authn.Keychain, error) {
-	k8s, err := kauth.NewFromPullSecrets(ctx, pullSecrets)
-	if err != nil {
-		return nil, err
-	}
-
-	return authn.NewMultiKeychain(
-		k8s,
-		authn.DefaultKeychain,
-		google.Keychain,
-		amazonKeychain,
-		azureKeychain,
-	), nil
+	_ = "STUB: not implemented"
+	return *new(authn.Keychain), nil
 }

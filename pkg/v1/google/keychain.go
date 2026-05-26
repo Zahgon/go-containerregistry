@@ -16,11 +16,9 @@ package google
 
 import (
 	"context"
-	"strings"
 	"sync"
 
 	"github.com/google/go-containerregistry/pkg/authn"
-	"github.com/google/go-containerregistry/pkg/logs"
 )
 
 // Keychain exports an instance of the google Keychain.
@@ -53,49 +51,20 @@ type googleKeychain struct {
 // In general, we don't worry about that here because we expect to use the same
 // gcloud configuration in the scope of this one process.
 func (gk *googleKeychain) Resolve(target authn.Resource) (authn.Authenticator, error) {
-	return gk.ResolveContext(context.Background(), target)
+	_ = "STUB: not implemented"
+	return *new(authn.Authenticator), nil
 }
 
 // ResolveContext implements authn.ContextKeychain.
 func (gk *googleKeychain) ResolveContext(ctx context.Context, target authn.Resource) (authn.Authenticator, error) {
+	_ = "STUB: not implemented"
 	// Only authenticate GCR and AR so it works with authn.NewMultiKeychain to fallback.
-	if !isGoogle(target.RegistryStr()) {
-		return authn.Anonymous, nil
-	}
-
-	gk.once.Do(func() {
-		gk.auth = resolve(ctx)
-	})
-
-	return gk.auth, nil
+	return *new(authn.Authenticator), nil
 }
 
 func resolve(ctx context.Context) authn.Authenticator {
-	auth, envErr := NewEnvAuthenticator(ctx)
-	if envErr == nil && auth != authn.Anonymous {
-		logs.Debug.Println("google.Keychain: using Application Default Credentials")
-		return auth
-	}
-
-	auth, gErr := NewGcloudAuthenticator(ctx)
-	if gErr == nil && auth != authn.Anonymous {
-		logs.Debug.Println("google.Keychain: using gcloud fallback")
-		return auth
-	}
-
-	logs.Debug.Println("Failed to get any Google credentials, falling back to Anonymous")
-	if envErr != nil {
-		logs.Debug.Printf("Google env error: %v", envErr)
-	}
-	if gErr != nil {
-		logs.Debug.Printf("gcloud error: %v", gErr)
-	}
-	return authn.Anonymous
+	_ = "STUB: not implemented"
+	return *new(authn.Authenticator)
 }
 
-func isGoogle(host string) bool {
-	return host == "gcr.io" ||
-		strings.HasSuffix(host, ".gcr.io") ||
-		strings.HasSuffix(host, ".pkg.dev") ||
-		strings.HasSuffix(host, ".google.com")
-}
+func isGoogle(host string) bool { _ = "STUB: not implemented"; return false }

@@ -17,11 +17,7 @@ package name
 import (
 	"encoding"
 	"encoding/json"
-	"net"
-	"net/url"
-	"path"
 	"regexp"
-	"strings"
 )
 
 // Detect more complex forms of localhost references.
@@ -46,134 +42,71 @@ var _ json.Unmarshaler = (*Registry)(nil)
 
 // RegistryStr returns the registry component of the Registry.
 func (r Registry) RegistryStr() string {
-	return r.registry
+	_ = "STUB: not implemented"
+
+	// Name returns the name from which the Registry was derived.
+	return ""
 }
 
-// Name returns the name from which the Registry was derived.
-func (r Registry) Name() string {
-	return r.RegistryStr()
-}
+func (r Registry) Name() string { _ = "STUB: not implemented"; return "" }
 
 func (r Registry) String() string {
-	return r.Name()
+	_ = "STUB: not implemented"
+
+	// Repo returns a Repository in the Registry with the given name.
+	return ""
 }
 
-// Repo returns a Repository in the Registry with the given name.
 func (r Registry) Repo(repo ...string) Repository {
-	return Repository{Registry: r, repository: path.Join(repo...)}
+	_ = "STUB: not implemented"
+	return *new(Repository)
 }
 
 // Scope returns the scope required to access the registry.
 func (r Registry) Scope(string) string {
+	_ = "STUB: not implemented"
 	// The only resource under 'registry' is 'catalog'. http://goo.gl/N9cN9Z
-	return "registry:catalog:*"
+	return ""
 }
 
-func (r Registry) isRFC1918() bool {
-	ipStr := strings.Split(r.Name(), ":")[0]
-	ip := net.ParseIP(ipStr)
-	if ip == nil {
-		return false
-	}
-	for _, cidr := range []string{"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"} {
-		_, block, _ := net.ParseCIDR(cidr)
-		if block.Contains(ip) {
-			return true
-		}
-	}
-	return false
-}
+func (r Registry) isRFC1918() bool { _ = "STUB: not implemented"; return false }
 
 // Scheme returns https scheme for all the endpoints except localhost or when explicitly defined.
-func (r Registry) Scheme() string {
-	if r.insecure {
-		return "http"
-	}
-	if r.isRFC1918() {
-		return "http"
-	}
-	if strings.HasPrefix(r.Name(), "localhost:") {
-		return "http"
-	}
-	if reLocal.MatchString(r.Name()) {
-		return "http"
-	}
-	if reLoopback.MatchString(r.Name()) {
-		return "http"
-	}
-	if reipv6Loopback.MatchString(r.Name()) {
-		return "http"
-	}
-	return "https"
-}
+func (r Registry) Scheme() string { _ = "STUB: not implemented"; return "" }
 
 func checkRegistry(name string) error {
+	_ = "STUB: not implemented"
 	// Per RFC 3986, registries (authorities) are required to be prefixed with "//"
 	// url.Host == hostname[:port] == authority
-	if url, err := url.Parse("//" + name); err != nil || url.Host != name {
-		return newErrBadName("registries must be valid RFC 3986 URI authorities: %s", name)
-	}
 	return nil
 }
 
 // NewRegistry returns a Registry based on the given name.
 // Strict validation requires explicit, valid RFC 3986 URI authorities to be given.
 func NewRegistry(name string, opts ...Option) (Registry, error) {
-	opt := makeOptions(opts...)
-	if opt.strict && len(name) == 0 {
-		return Registry{}, newErrBadName("strict validation requires the registry to be explicitly defined")
-	}
-
-	if err := checkRegistry(name); err != nil {
-		return Registry{}, err
-	}
-
-	if name == "" {
-		name = opt.defaultRegistry
-	}
-	// Rewrite "docker.io" to "index.docker.io".
-	// See: https://github.com/google/go-containerregistry/issues/68
-	if name == defaultRegistryAlias {
-		name = DefaultRegistry
-	}
-
-	return Registry{registry: name, insecure: opt.insecure}, nil
+	_ = "STUB: not implemented"
+	return *new(Registry), nil
 }
+
+// Rewrite "docker.io" to "index.docker.io".
+// See: https://github.com/google/go-containerregistry/issues/68
 
 // NewInsecureRegistry returns an Insecure Registry based on the given name.
 //
 // Deprecated: Use the Insecure Option with NewRegistry instead.
 func NewInsecureRegistry(name string, opts ...Option) (Registry, error) {
-	opts = append(opts, Insecure)
-	return NewRegistry(name, opts...)
+	_ = "STUB: not implemented"
+	return *new(Registry), nil
 }
 
 // MarshalJSON formats the Registry into a string for JSON serialization.
-func (r Registry) MarshalJSON() ([]byte, error) { return json.Marshal(r.String()) }
+func (r Registry) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalJSON parses a JSON string into a Registry.
-func (r *Registry) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
-	}
-	n, err := NewRegistry(s)
-	if err != nil {
-		return err
-	}
-	*r = n
-	return nil
-}
+func (r *Registry) UnmarshalJSON(data []byte) error { _ = "STUB: not implemented"; return nil }
 
 // MarshalText formats the registry into a string for text serialization.
-func (r Registry) MarshalText() ([]byte, error) { return []byte(r.String()), nil }
+func (r Registry) MarshalText() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalText parses a text string into a Registry.
-func (r *Registry) UnmarshalText(data []byte) error {
-	n, err := NewRegistry(string(data))
-	if err != nil {
-		return err
-	}
-	*r = n
-	return nil
-}
+func (r *Registry) UnmarshalText(data []byte) error { _ = "STUB: not implemented"; return nil }

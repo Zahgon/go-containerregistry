@@ -20,8 +20,4 @@ type Bearer struct {
 }
 
 // Authorization implements Authenticator.
-func (b *Bearer) Authorization() (*AuthConfig, error) {
-	return &AuthConfig{
-		RegistryToken: b.Token,
-	}, nil
-}
+func (b *Bearer) Authorization() (*AuthConfig, error) { _ = "STUB: not implemented"; return nil, nil }

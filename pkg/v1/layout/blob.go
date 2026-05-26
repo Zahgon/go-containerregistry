@@ -16,22 +16,18 @@ package layout
 
 import (
 	"io"
-	"os"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 )
 
 // Blob returns a blob with the given hash from the Path.
 func (l Path) Blob(h v1.Hash) (io.ReadCloser, error) {
-	return os.Open(l.blobPath(h))
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // Bytes is a convenience function to return a blob from the Path as
 // a byte slice.
-func (l Path) Bytes(h v1.Hash) ([]byte, error) {
-	return os.ReadFile(l.blobPath(h))
-}
+func (l Path) Bytes(h v1.Hash) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func (l Path) blobPath(h v1.Hash) string {
-	return l.path("blobs", h.Algorithm, h.Hex)
-}
+func (l Path) blobPath(h v1.Hash) string { _ = "STUB: not implemented"; return "" }

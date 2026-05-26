@@ -21,17 +21,7 @@ type options struct {
 	fast bool
 }
 
-func makeOptions(opts ...Option) options {
-	opt := options{
-		fast: false,
-	}
-	for _, o := range opts {
-		o(&opt)
-	}
-	return opt
-}
+func makeOptions(opts ...Option) options { _ = "STUB: not implemented"; return *new(options) }
 
 // Fast causes validate to skip reading and digesting layer bytes.
-func Fast(o *options) {
-	o.fast = true
-}
+func Fast(o *options) { _ = "STUB: not implemented"; return }

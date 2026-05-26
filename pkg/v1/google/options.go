@@ -23,51 +23,25 @@ import (
 
 // WithTransport is a functional option for overriding the default transport
 // on a remote image
-func WithTransport(t http.RoundTripper) Option {
-	return func(l *lister) error {
-		l.transport = t
-		return nil
-	}
-}
+func WithTransport(t http.RoundTripper) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithAuth is a functional option for overriding the default authenticator
 // on a remote image
-func WithAuth(auth authn.Authenticator) Option {
-	return func(l *lister) error {
-		l.auth = auth
-		return nil
-	}
-}
+func WithAuth(auth authn.Authenticator) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithAuthFromKeychain is a functional option for overriding the default
 // authenticator on a remote image using an authn.Keychain
 func WithAuthFromKeychain(keys authn.Keychain) Option {
-	return func(l *lister) error {
-		auth, err := keys.Resolve(l.repo.Registry)
-		if err != nil {
-			return err
-		}
-		l.auth = auth
-		return nil
-	}
+	_ = "STUB: not implemented"
+	return *new(Option)
 }
 
 // WithContext is a functional option for overriding the default
 // context.Context for HTTP request to list remote images
-func WithContext(ctx context.Context) Option {
-	return func(l *lister) error {
-		l.ctx = ctx
-		return nil
-	}
-}
+func WithContext(ctx context.Context) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithUserAgent adds the given string to the User-Agent header for any HTTP
 // requests. This header will also include "go-containerregistry/${version}".
 //
 // If you want to completely overwrite the User-Agent header, use WithTransport.
-func WithUserAgent(ua string) Option {
-	return func(l *lister) error {
-		l.userAgent = ua
-		return nil
-	}
-}
+func WithUserAgent(ua string) Option { _ = "STUB: not implemented"; return *new(Option) }

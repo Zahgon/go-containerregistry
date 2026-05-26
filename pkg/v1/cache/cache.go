@@ -19,7 +19,6 @@ import (
 	"errors"
 	"io"
 
-	"github.com/google/go-containerregistry/pkg/logs"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
@@ -51,30 +50,14 @@ var ErrNotFound = errors.New("layer was not found")
 // Image returns a new Image which wraps the given Image, whose layers will be
 // pulled from the Cache if they are found, and written to the Cache as they
 // are read from the underlying Image.
-func Image(i v1.Image, c Cache) v1.Image {
-	return &image{
-		Image: i,
-		c:     c,
-	}
-}
+func Image(i v1.Image, c Cache) v1.Image { _ = "STUB: not implemented"; return *new(v1.Image) }
 
 type image struct {
 	v1.Image
 	c Cache
 }
 
-func (i *image) Layers() ([]v1.Layer, error) {
-	ls, err := i.Image.Layers()
-	if err != nil {
-		return nil, err
-	}
-
-	out := make([]v1.Layer, len(ls))
-	for idx, l := range ls {
-		out[idx] = &lazyLayer{inner: l, c: i.c}
-	}
-	return out, nil
-}
+func (i *image) Layers() ([]v1.Layer, error) { _ = "STUB: not implemented"; return nil, nil }
 
 type lazyLayer struct {
 	inner v1.Layer
@@ -82,88 +65,50 @@ type lazyLayer struct {
 }
 
 func (l *lazyLayer) Compressed() (io.ReadCloser, error) {
-	digest, err := l.inner.Digest()
-	if err != nil {
-		return nil, err
-	}
-
-	if cl, err := l.c.Get(digest); err == nil {
-		// Layer found in the cache.
-		logs.Progress.Printf("Layer %s found (compressed) in cache", digest)
-		return cl.Compressed()
-	} else if !errors.Is(err, ErrNotFound) {
-		return nil, err
-	}
-
-	// Not cached, pull and return the real layer.
-	logs.Progress.Printf("Layer %s not found (compressed) in cache, getting", digest)
-	rl, err := l.c.Put(l.inner)
-	if err != nil {
-		return nil, err
-	}
-	return rl.Compressed()
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
+
+// Layer found in the cache.
+
+// Not cached, pull and return the real layer.
 
 func (l *lazyLayer) Uncompressed() (io.ReadCloser, error) {
-	diffID, err := l.inner.DiffID()
-	if err != nil {
-		return nil, err
-	}
-	if cl, err := l.c.Get(diffID); err == nil {
-		// Layer found in the cache.
-		logs.Progress.Printf("Layer %s found (uncompressed) in cache", diffID)
-		return cl.Uncompressed()
-	} else if !errors.Is(err, ErrNotFound) {
-		return nil, err
-	}
-
-	// Not cached, pull and return the real layer.
-	logs.Progress.Printf("Layer %s not found (uncompressed) in cache, getting", diffID)
-	rl, err := l.c.Put(l.inner)
-	if err != nil {
-		return nil, err
-	}
-	return rl.Uncompressed()
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
-func (l *lazyLayer) Size() (int64, error)                { return l.inner.Size() }
-func (l *lazyLayer) DiffID() (v1.Hash, error)            { return l.inner.DiffID() }
-func (l *lazyLayer) Digest() (v1.Hash, error)            { return l.inner.Digest() }
-func (l *lazyLayer) MediaType() (types.MediaType, error) { return l.inner.MediaType() }
+// Layer found in the cache.
+
+// Not cached, pull and return the real layer.
+
+func (l *lazyLayer) Size() (int64, error)     { _ = "STUB: not implemented"; return 0, nil }
+func (l *lazyLayer) DiffID() (v1.Hash, error) { _ = "STUB: not implemented"; return *new(v1.Hash), nil }
+func (l *lazyLayer) Digest() (v1.Hash, error) { _ = "STUB: not implemented"; return *new(v1.Hash), nil }
+func (l *lazyLayer) MediaType() (types.MediaType, error) {
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
+}
 
 func (i *image) LayerByDigest(h v1.Hash) (v1.Layer, error) {
-	l, err := i.c.Get(h)
-	if errors.Is(err, ErrNotFound) {
-		// Not cached, get it and write it.
-		l, err := i.Image.LayerByDigest(h)
-		if err != nil {
-			return nil, err
-		}
-		return i.c.Put(l)
-	}
-	return l, err
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
+// Not cached, get it and write it.
+
 func (i *image) LayerByDiffID(h v1.Hash) (v1.Layer, error) {
-	l, err := i.c.Get(h)
-	if errors.Is(err, ErrNotFound) {
-		// Not cached, get it and write it.
-		l, err := i.Image.LayerByDiffID(h)
-		if err != nil {
-			return nil, err
-		}
-		return i.c.Put(l)
-	}
-	return l, err
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
+
+// Not cached, get it and write it.
 
 // ImageIndex returns a new ImageIndex which wraps the given ImageIndex's
 // children with either Image(child, c) or ImageIndex(child, c) depending on type.
 func ImageIndex(ii v1.ImageIndex, c Cache) v1.ImageIndex {
-	return &imageIndex{
-		inner: ii,
-		c:     c,
-	}
+	_ = "STUB: not implemented"
+	return *new(v1.ImageIndex)
 }
 
 type imageIndex struct {
@@ -171,24 +116,27 @@ type imageIndex struct {
 	c     Cache
 }
 
-func (ii *imageIndex) MediaType() (types.MediaType, error)       { return ii.inner.MediaType() }
-func (ii *imageIndex) Digest() (v1.Hash, error)                  { return ii.inner.Digest() }
-func (ii *imageIndex) Size() (int64, error)                      { return ii.inner.Size() }
-func (ii *imageIndex) IndexManifest() (*v1.IndexManifest, error) { return ii.inner.IndexManifest() }
-func (ii *imageIndex) RawManifest() ([]byte, error)              { return ii.inner.RawManifest() }
+func (ii *imageIndex) MediaType() (types.MediaType, error) {
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
+}
+func (ii *imageIndex) Digest() (v1.Hash, error) {
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
+}
+func (ii *imageIndex) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
+func (ii *imageIndex) IndexManifest() (*v1.IndexManifest, error) {
+	_ = "STUB: not implemented"
+	return nil, nil
+}
+func (ii *imageIndex) RawManifest() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (ii *imageIndex) Image(h v1.Hash) (v1.Image, error) {
-	i, err := ii.inner.Image(h)
-	if err != nil {
-		return nil, err
-	}
-	return Image(i, ii.c), nil
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
 
 func (ii *imageIndex) ImageIndex(h v1.Hash) (v1.ImageIndex, error) {
-	idx, err := ii.inner.ImageIndex(h)
-	if err != nil {
-		return nil, err
-	}
-	return ImageIndex(idx, ii.c), nil
+	_ = "STUB: not implemented"
+	return *new(v1.ImageIndex), nil
 }

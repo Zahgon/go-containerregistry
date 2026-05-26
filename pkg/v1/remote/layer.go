@@ -18,8 +18,6 @@ import (
 	"context"
 	"io"
 
-	"github.com/google/go-containerregistry/internal/redact"
-	"github.com/google/go-containerregistry/internal/verify"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/types"
@@ -34,44 +32,36 @@ type remoteLayer struct {
 
 // Compressed implements partial.CompressedLayer
 func (rl *remoteLayer) Compressed() (io.ReadCloser, error) {
+	_ = "STUB: not implemented"
 	// We don't want to log binary layers -- this can break terminals.
-	ctx := redact.NewContext(rl.ctx, "omitting binary blobs from logs")
-	return rl.fetcher.fetchBlob(ctx, verify.SizeUnknown, rl.digest)
+	return *new(io.ReadCloser), nil
 }
 
 // Compressed implements partial.CompressedLayer
-func (rl *remoteLayer) Size() (int64, error) {
-	resp, err := rl.fetcher.headBlob(rl.ctx, rl.digest)
-	if err != nil {
-		return -1, err
-	}
-	defer resp.Body.Close()
-	return resp.ContentLength, nil
-}
+func (rl *remoteLayer) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // Digest implements partial.CompressedLayer
 func (rl *remoteLayer) Digest() (v1.Hash, error) {
-	return rl.digest, nil
+	_ = "STUB: not implemented"
+	return *
+
+	// MediaType implements v1.Layer
+	new(v1.Hash), nil
 }
 
-// MediaType implements v1.Layer
 func (rl *remoteLayer) MediaType() (types.MediaType, error) {
-	return types.DockerLayer, nil
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }
 
 // See partial.Exists.
-func (rl *remoteLayer) Exists() (bool, error) {
-	return rl.fetcher.blobExists(rl.ctx, rl.digest)
-}
+func (rl *remoteLayer) Exists() (bool, error) { _ = "STUB: not implemented"; return false, nil }
 
 // Layer reads the given blob reference from a registry as a Layer. A blob
 // reference here is just a punned name.Digest where the digest portion is the
 // digest of the blob to be read and the repository portion is the repo where
 // that blob lives.
 func Layer(ref name.Digest, options ...Option) (v1.Layer, error) {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return nil, err
-	}
-	return newPuller(o).Layer(o.context, ref)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }

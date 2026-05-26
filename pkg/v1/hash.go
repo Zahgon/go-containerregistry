@@ -15,14 +15,10 @@
 package v1
 
 import (
-	"crypto"
 	"encoding"
-	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"hash"
 	"io"
-	"strings"
 )
 
 // Hash is an unqualified digest of some content, e.g. sha256:deadbeef
@@ -40,91 +36,31 @@ var _ json.Marshaler = (*Hash)(nil)
 var _ json.Unmarshaler = (*Hash)(nil)
 
 // String reverses NewHash returning the string-form of the hash.
-func (h Hash) String() string {
-	return fmt.Sprintf("%s:%s", h.Algorithm, h.Hex)
-}
+func (h Hash) String() string { _ = "STUB: not implemented"; return "" }
 
 // NewHash validates the input string is a hash and returns a strongly type Hash object.
-func NewHash(s string) (Hash, error) {
-	h := Hash{}
-	if err := h.parse(s); err != nil {
-		return Hash{}, err
-	}
-	return h, nil
-}
+func NewHash(s string) (Hash, error) { _ = "STUB: not implemented"; return *new(Hash), nil }
 
 // MarshalJSON implements json.Marshaler
-func (h Hash) MarshalJSON() ([]byte, error) { return json.Marshal(h.String()) }
+func (h Hash) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalJSON implements json.Unmarshaler
-func (h *Hash) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
-	}
-	return h.parse(s)
-}
+func (h *Hash) UnmarshalJSON(data []byte) error { _ = "STUB: not implemented"; return nil }
 
 // MarshalText implements encoding.TextMarshaler. This is required to use
 // v1.Hash as a key in a map when marshalling JSON.
-func (h Hash) MarshalText() ([]byte, error) { return []byte(h.String()), nil }
+func (h Hash) MarshalText() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalText implements encoding.TextUnmarshaler. This is required to use
 // v1.Hash as a key in a map when unmarshalling JSON.
-func (h *Hash) UnmarshalText(text []byte) error { return h.parse(string(text)) }
+func (h *Hash) UnmarshalText(text []byte) error { _ = "STUB: not implemented"; return nil }
 
 // Hasher returns a hash.Hash for the named algorithm (e.g. "sha256")
-func Hasher(name string) (hash.Hash, error) {
-	switch name {
-	case "sha256":
-		return crypto.SHA256.New(), nil
-	default:
-		return nil, fmt.Errorf("unsupported hash: %q", name)
-	}
-}
+func Hasher(name string) (hash.Hash, error) { _ = "STUB: not implemented"; return *new(hash.Hash), nil }
 
-func (h *Hash) parse(unquoted string) error {
-	algo, body, ok := strings.Cut(unquoted, ":")
-	if !ok || algo == "" || body == "" {
-		return fmt.Errorf("cannot parse hash: %q", unquoted)
-	}
+func (h *Hash) parse(unquoted string) error { _ = "STUB: not implemented"; return nil }
 
-	rest := strings.TrimLeft(body, "0123456789abcdef")
-	if len(rest) != 0 {
-		return fmt.Errorf("found non-hex character in hash: %c", rest[0])
-	}
-
-	var wantBytes int
-	switch algo {
-	case "sha256":
-		wantBytes = crypto.SHA256.Size()
-	default:
-		hasher, err := Hasher(algo)
-		if err != nil {
-			return err
-		}
-		wantBytes = hasher.Size()
-	}
-
-	// Compare the hex to the expected size (2 hex characters per byte)
-	if len(body) != hex.EncodedLen(wantBytes) {
-		return fmt.Errorf("wrong number of hex digits for %s: %s", algo, body)
-	}
-
-	h.Algorithm = algo
-	h.Hex = body
-	return nil
-}
+// Compare the hex to the expected size (2 hex characters per byte)
 
 // SHA256 computes the Hash of the provided io.Reader's content.
-func SHA256(r io.Reader) (Hash, int64, error) {
-	hasher := crypto.SHA256.New()
-	n, err := io.Copy(hasher, r)
-	if err != nil {
-		return Hash{}, 0, err
-	}
-	return Hash{
-		Algorithm: "sha256",
-		Hex:       hex.EncodeToString(hasher.Sum(make([]byte, 0, hasher.Size()))),
-	}, n, nil
-}
+func SHA256(r io.Reader) (Hash, int64, error) { _ = "STUB: not implemented"; return *new(Hash), 0, nil }

@@ -14,12 +14,9 @@
 
 package layout
 
-import "path/filepath"
-
 // Path represents an OCI image layout rooted in a file system path
 type Path string
 
-func (l Path) path(elem ...string) string {
-	complete := []string{string(l)} //nolint:prealloc
-	return filepath.Join(append(complete, elem...)...)
-}
+func (l Path) path(elem ...string) string { _ = "STUB: not implemented"; return "" }
+
+//nolint:prealloc

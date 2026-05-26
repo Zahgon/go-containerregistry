@@ -17,7 +17,6 @@ package gcrane
 import (
 	"context"
 	"net/http"
-	"runtime"
 
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
@@ -36,72 +35,27 @@ type options struct {
 	crane  []crane.Option
 }
 
-func makeOptions(opts ...Option) *options {
-	o := &options{
-		jobs: runtime.GOMAXPROCS(0),
-		remote: []remote.Option{
-			remote.WithAuthFromKeychain(Keychain),
-		},
-		google: []google.Option{
-			google.WithAuthFromKeychain(Keychain),
-		},
-		crane: []crane.Option{
-			crane.WithAuthFromKeychain(Keychain),
-		},
-	}
-
-	for _, option := range opts {
-		option(o)
-	}
-
-	return o
-}
+func makeOptions(opts ...Option) *options { _ = "STUB: not implemented"; return nil }
 
 // WithJobs sets the number of concurrent jobs to run.
 //
 // The default number of jobs is GOMAXPROCS.
-func WithJobs(jobs int) Option {
-	return func(o *options) {
-		o.jobs = jobs
-	}
-}
+func WithJobs(jobs int) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithTransport is a functional option for overriding the default transport
 // for remote operations.
-func WithTransport(t http.RoundTripper) Option {
-	return func(o *options) {
-		o.remote = append(o.remote, remote.WithTransport(t))
-		o.google = append(o.google, google.WithTransport(t))
-		o.crane = append(o.crane, crane.WithTransport(t))
-	}
-}
+func WithTransport(t http.RoundTripper) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithUserAgent adds the given string to the User-Agent header for any HTTP
 // requests.
-func WithUserAgent(ua string) Option {
-	return func(o *options) {
-		o.remote = append(o.remote, remote.WithUserAgent(ua))
-		o.google = append(o.google, google.WithUserAgent(ua))
-		o.crane = append(o.crane, crane.WithUserAgent(ua))
-	}
-}
+func WithUserAgent(ua string) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithContext is a functional option for setting the context.
-func WithContext(ctx context.Context) Option {
-	return func(o *options) {
-		o.remote = append(o.remote, remote.WithContext(ctx))
-		o.google = append(o.google, google.WithContext(ctx))
-		o.crane = append(o.crane, crane.WithContext(ctx))
-	}
-}
+func WithContext(ctx context.Context) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithPlatform is a functional option for selecting a single platform from
 // a multi-platform image. A nil platform copies the index unchanged.
-func WithPlatform(platform *v1.Platform) Option {
-	return func(o *options) {
-		o.crane = append(o.crane, crane.WithPlatform(platform))
-	}
-}
+func WithPlatform(platform *v1.Platform) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithKeychain is a functional option for overriding the default
 // authenticator for remote operations, using an authn.Keychain to find
@@ -109,12 +63,11 @@ func WithPlatform(platform *v1.Platform) Option {
 //
 // By default, gcrane will use gcrane.Keychain.
 func WithKeychain(keys authn.Keychain) Option {
-	return func(o *options) {
-		// Replace the default keychain at position 0.
-		o.remote[0] = remote.WithAuthFromKeychain(keys)
-		o.google[0] = google.WithAuthFromKeychain(keys)
-		o.crane[0] = crane.WithAuthFromKeychain(keys)
-	}
+	_ = "STUB: not implemented"
+	return *
+
+	// Replace the default keychain at position 0.
+	new(Option)
 }
 
 // WithAuth is a functional option for overriding the default authenticator
@@ -122,10 +75,9 @@ func WithKeychain(keys authn.Keychain) Option {
 //
 // By default, gcrane will use gcrane.Keychain.
 func WithAuth(auth authn.Authenticator) Option {
-	return func(o *options) {
-		// Replace the default keychain at position 0.
-		o.remote[0] = remote.WithAuth(auth)
-		o.google[0] = google.WithAuth(auth)
-		o.crane[0] = crane.WithAuth(auth)
-	}
+	_ = "STUB: not implemented"
+	return *
+
+	// Replace the default keychain at position 0.
+	new(Option)
 }

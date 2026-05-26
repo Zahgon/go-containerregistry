@@ -15,18 +15,9 @@
 package tarball
 
 import (
-	"bytes"
-	"compress/gzip"
-	"fmt"
 	"io"
-	"os"
-	"sync"
 
-	comp "github.com/google/go-containerregistry/internal/compression"
-	ggzip "github.com/google/go-containerregistry/internal/gzip"
-	"github.com/google/go-containerregistry/internal/zstd"
 	"github.com/google/go-containerregistry/pkg/compression"
-	"github.com/google/go-containerregistry/pkg/logs"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
@@ -44,50 +35,52 @@ type layer struct {
 }
 
 // Descriptor implements partial.withDescriptor.
-func (l *layer) Descriptor() (*v1.Descriptor, error) {
-	digest, err := l.Digest()
-	if err != nil {
-		return nil, err
-	}
-	return &v1.Descriptor{
-		Size:        l.size,
-		Digest:      digest,
-		Annotations: l.annotations,
-		MediaType:   l.mediaType,
-	}, nil
-}
+func (l *layer) Descriptor() (*v1.Descriptor, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // Digest implements v1.Layer
 func (l *layer) Digest() (v1.Hash, error) {
-	return l.digest, nil
+	_ = "STUB: not implemented"
+	return *
+
+	// DiffID implements v1.Layer
+	new(v1.Hash), nil
 }
 
-// DiffID implements v1.Layer
 func (l *layer) DiffID() (v1.Hash, error) {
-	return l.diffID, nil
+	_ = "STUB: not implemented"
+	return *
+
+	// Compressed implements v1.Layer
+	new(v1.Hash), nil
 }
 
-// Compressed implements v1.Layer
 func (l *layer) Compressed() (io.ReadCloser, error) {
-	return l.compressedopener()
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // Uncompressed implements v1.Layer
 func (l *layer) Uncompressed() (io.ReadCloser, error) {
-	return l.uncompressedopener()
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // Size implements v1.Layer
 func (l *layer) Size() (int64, error) {
-	return l.size, nil
+	_ = "STUB: not implemented"
+
+	// MediaType implements v1.Layer
+	return 0, nil
 }
 
-// MediaType implements v1.Layer
 func (l *layer) MediaType() (types.MediaType, error) {
-	return l.mediaType, nil
+	_ = "STUB: not implemented"
+	return *
+
+	// LayerOption applies options to layer
+	new(types.MediaType), nil
 }
 
-// LayerOption applies options to layer
 type LayerOption func(*layer)
 
 // WithCompression is a functional option for overriding the default
@@ -95,63 +88,27 @@ type LayerOption func(*layer)
 // Please note that WithCompression(compression.ZStd) should be used
 // in conjunction with WithMediaType(types.OCILayerZStd)
 func WithCompression(comp compression.Compression) LayerOption {
-	return func(l *layer) {
-		switch comp {
-		case compression.ZStd:
-			l.compression = compression.ZStd
-		case compression.GZip:
-			l.compression = compression.GZip
-		case compression.None:
-			logs.Warn.Printf("Compression type 'none' is not supported for tarball layers; using gzip compression.")
-			l.compression = compression.GZip
-		default:
-			logs.Warn.Printf("Unexpected compression type for WithCompression(): %s; using gzip compression instead.", comp)
-			l.compression = compression.GZip
-		}
-	}
+	_ = "STUB: not implemented"
+	return *new(LayerOption)
 }
 
 // WithCompressionLevel is a functional option for overriding the default
 // compression level used for compressing uncompressed tarballs.
 func WithCompressionLevel(level int) LayerOption {
-	return func(l *layer) {
-		l.compressionLevel = level
-	}
+	_ = "STUB: not implemented"
+	return *new(LayerOption)
 }
 
 // WithMediaType is a functional option for overriding the layer's media type.
 func WithMediaType(mt types.MediaType) LayerOption {
-	return func(l *layer) {
-		l.mediaType = mt
-	}
+	_ = "STUB: not implemented"
+	return *new(LayerOption)
 }
 
 // WithCompressedCaching is a functional option that overrides the
 // logic for accessing the compressed bytes to memoize the result
 // and avoid expensive repeated gzips.
-func WithCompressedCaching(l *layer) {
-	var once sync.Once
-	var err error
-
-	buf := bytes.NewBuffer(nil)
-	og := l.compressedopener
-
-	l.compressedopener = func() (io.ReadCloser, error) {
-		once.Do(func() {
-			var rc io.ReadCloser
-			rc, err = og()
-			if err == nil {
-				defer rc.Close()
-				_, err = io.Copy(buf, rc)
-			}
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		return io.NopCloser(bytes.NewBuffer(buf.Bytes())), nil
-	}
-}
+func WithCompressedCaching(l *layer) { _ = "STUB: not implemented"; return }
 
 // WithEstargzOptions is a functional option that allow the caller to pass
 // through estargz.Options to the underlying compression layer.  This is
@@ -159,20 +116,25 @@ func WithCompressedCaching(l *layer) {
 //
 // Deprecated: WithEstargz is deprecated; it is a no-op.
 func WithEstargzOptions(...any) LayerOption {
-	return func(*layer) {}
+	_ = "STUB: not implemented"
+	return *
+
+	// WithEstargz is a functional option that explicitly enables estargz support.
+	//
+	// Deprecated: WithEstargz is deprecated; it is a no-op.
+	new(LayerOption)
 }
 
-// WithEstargz is a functional option that explicitly enables estargz support.
-//
-// Deprecated: WithEstargz is deprecated; it is a no-op.
-func WithEstargz(*layer) {}
+func WithEstargz(*layer) {
+	_ = "STUB: not implemented"
 
-// LayerFromFile returns a v1.Layer given a tarball
+	// LayerFromFile returns a v1.Layer given a tarball
+	return
+}
+
 func LayerFromFile(path string, opts ...LayerOption) (v1.Layer, error) {
-	opener := func() (io.ReadCloser, error) {
-		return os.Open(path)
-	}
-	return LayerFromOpener(opener, opts...)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // LayerFromOpener returns a v1.Layer given an Opener function.
@@ -187,87 +149,11 @@ func LayerFromFile(path string, opts ...LayerOption) (v1.Layer, error) {
 // Since gzip can be expensive, we support an option to memoize the
 // compression that can be passed here: tarball.WithCompressedCaching
 func LayerFromOpener(opener Opener, opts ...LayerOption) (v1.Layer, error) {
-	comp, err := comp.GetCompression(opener)
-	if err != nil {
-		return nil, err
-	}
-
-	layer := &layer{
-		compression:      compression.GZip,
-		compressionLevel: gzip.BestSpeed,
-		annotations:      make(map[string]string, 1),
-		mediaType:        types.DockerLayer,
-	}
-
-	switch comp {
-	case compression.GZip:
-		layer.compressedopener = opener
-		layer.uncompressedopener = func() (io.ReadCloser, error) {
-			urc, err := opener()
-			if err != nil {
-				return nil, err
-			}
-			return ggzip.UnzipReadCloser(urc)
-		}
-	case compression.ZStd:
-		layer.compressedopener = opener
-		layer.uncompressedopener = func() (io.ReadCloser, error) {
-			urc, err := opener()
-			if err != nil {
-				return nil, err
-			}
-			return zstd.UnzipReadCloser(urc)
-		}
-	default:
-		layer.uncompressedopener = opener
-		layer.compressedopener = func() (io.ReadCloser, error) {
-			crc, err := opener()
-			if err != nil {
-				return nil, err
-			}
-
-			if layer.compression == compression.ZStd {
-				return zstd.ReadCloserLevel(crc, layer.compressionLevel), nil
-			}
-
-			return ggzip.ReadCloserLevel(crc, layer.compressionLevel), nil
-		}
-	}
-
-	for _, opt := range opts {
-		opt(layer)
-	}
-
-	// Warn if media type does not match compression
-	var mediaTypeMismatch = false
-	switch layer.compression {
-	case compression.GZip:
-		mediaTypeMismatch =
-			layer.mediaType != types.OCILayer &&
-				layer.mediaType != types.OCIRestrictedLayer &&
-				layer.mediaType != types.DockerLayer
-
-	case compression.ZStd:
-		mediaTypeMismatch = layer.mediaType != types.OCILayerZStd
-	}
-
-	if mediaTypeMismatch {
-		logs.Warn.Printf("Unexpected mediaType (%s) for selected compression in %s in LayerFromOpener().", layer.mediaType, layer.compression)
-	}
-
-	if layer.digest, layer.size, err = computeDigest(layer.compressedopener); err != nil {
-		return nil, err
-	}
-
-	empty := v1.Hash{}
-	if layer.diffID == empty {
-		if layer.diffID, err = computeDiffID(layer.uncompressedopener); err != nil {
-			return nil, err
-		}
-	}
-
-	return layer, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
+
+// Warn if media type does not match compression
 
 // LayerFromReader returns a v1.Layer given a io.Reader.
 //
@@ -275,33 +161,16 @@ func LayerFromOpener(opener Opener, opts ...LayerOption) (v1.Layer, error) {
 //
 // Deprecated: Use LayerFromOpener or stream.NewLayer instead, if possible.
 func LayerFromReader(reader io.Reader, opts ...LayerOption) (v1.Layer, error) {
-	tmp, err := os.CreateTemp("", "")
-	if err != nil {
-		return nil, fmt.Errorf("creating temp file to buffer reader: %w", err)
-	}
-	if _, err := io.Copy(tmp, reader); err != nil {
-		return nil, fmt.Errorf("writing temp file to buffer reader: %w", err)
-	}
-	return LayerFromFile(tmp.Name(), opts...)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 func computeDigest(opener Opener) (v1.Hash, int64, error) {
-	rc, err := opener()
-	if err != nil {
-		return v1.Hash{}, 0, err
-	}
-	defer rc.Close()
-
-	return v1.SHA256(rc)
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), 0, nil
 }
 
 func computeDiffID(opener Opener) (v1.Hash, error) {
-	rc, err := opener()
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	defer rc.Close()
-
-	digest, _, err := v1.SHA256(rc)
-	return digest, err
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }

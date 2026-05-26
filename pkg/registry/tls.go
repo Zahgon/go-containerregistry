@@ -16,14 +16,10 @@ package registry
 
 import (
 	"net/http/httptest"
-
-	ggcrtest "github.com/google/go-containerregistry/internal/httptest"
 )
 
 // TLS returns an httptest server, with an http client that has been configured to
 // send all requests to the returned server. The TLS certs are generated for the given domain
 // which should correspond to the domain the image is stored in.
 // If you need a transport, Client().Transport is correctly configured.
-func TLS(domain string) (*httptest.Server, error) {
-	return ggcrtest.NewTLSServer(domain, New())
-}
+func TLS(domain string) (*httptest.Server, error) { _ = "STUB: not implemented"; return nil, nil }

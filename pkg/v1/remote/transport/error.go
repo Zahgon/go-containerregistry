@@ -15,14 +15,7 @@
 package transport
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
-	"strings"
-
-	"github.com/google/go-containerregistry/internal/redact"
 )
 
 // Error implements error to support the following error specification:
@@ -44,53 +37,12 @@ type Error struct {
 var _ error = (*Error)(nil)
 
 // Error implements error
-func (e *Error) Error() string {
-	prefix := ""
-	if e.Request != nil {
-		prefix = fmt.Sprintf("%s %s: ", e.Request.Method, redact.URL(e.Request.URL))
-	}
-	return prefix + e.responseErr()
-}
+func (e *Error) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e *Error) responseErr() string {
-	switch len(e.Errors) {
-	case 0:
-		if len(e.rawBody) == 0 {
-			if e.Request != nil && e.Request.Method == http.MethodHead {
-				return fmt.Sprintf("unexpected status code %d %s (HEAD responses have no body, use GET for details)", e.StatusCode, http.StatusText(e.StatusCode))
-			}
-			return fmt.Sprintf("unexpected status code %d %s", e.StatusCode, http.StatusText(e.StatusCode))
-		}
-		return fmt.Sprintf("unexpected status code %d %s: %s", e.StatusCode, http.StatusText(e.StatusCode), e.rawBody)
-	case 1:
-		return e.Errors[0].String()
-	default:
-		var errors []string
-		for _, d := range e.Errors {
-			errors = append(errors, d.String())
-		}
-		return fmt.Sprintf("multiple errors returned: %s",
-			strings.Join(errors, "; "))
-	}
-}
+func (e *Error) responseErr() string { _ = "STUB: not implemented"; return "" }
 
 // Temporary returns whether the request that preceded the error is temporary.
-func (e *Error) Temporary() bool {
-	if e.temporary {
-		return true
-	}
-
-	if len(e.Errors) == 0 {
-		_, ok := temporaryStatusCodes[e.StatusCode]
-		return ok
-	}
-	for _, d := range e.Errors {
-		if _, ok := temporaryErrorCodes[d.Code]; !ok {
-			return false
-		}
-	}
-	return true
-}
+func (e *Error) Temporary() bool { _ = "STUB: not implemented"; return false }
 
 // Diagnostic represents a single error returned by a Docker registry interaction.
 type Diagnostic struct {
@@ -100,13 +52,7 @@ type Diagnostic struct {
 }
 
 // String stringifies the Diagnostic in the form: $Code: $Message[; $Detail]
-func (d Diagnostic) String() string {
-	msg := fmt.Sprintf("%s: %s", d.Code, d.Message)
-	if d.Detail != nil {
-		msg = fmt.Sprintf("%s; %v", msg, d.Detail)
-	}
-	return msg
-}
+func (d Diagnostic) String() string { _ = "STUB: not implemented"; return "" }
 
 // ErrorCode is an enumeration of supported error codes.
 type ErrorCode string
@@ -159,49 +105,21 @@ var temporaryStatusCodes = map[int]struct{}{
 }
 
 // CheckError returns a structured error if the response status is not in codes.
-func CheckError(resp *http.Response, codes ...int) error {
-	for _, code := range codes {
-		if resp.StatusCode == code {
-			// This is one of the supported status codes.
-			return nil
-		}
-	}
+func CheckError(resp *http.Response, codes ...int) error { _ = "STUB: not implemented"; return nil }
 
-	b, err := io.ReadAll(io.LimitReader(resp.Body, maxErrorBodySize))
-	if err != nil {
-		return err
-	}
-
-	return makeError(resp, b)
-}
+// This is one of the supported status codes.
 
 func makeError(resp *http.Response, body []byte) *Error {
+	_ = "STUB: not implemented"
 	// https://github.com/distribution/distribution/blob/aac2f6c8b7c5a6c60190848bab5cbeed2b5ba0a9/docs/spec/api.md#errors
-	structuredError := &Error{}
-
-	// This can fail if e.g. the response body is not valid JSON. That's fine,
-	// we'll construct an appropriate error string from the body and status code.
-	_ = json.Unmarshal(body, structuredError)
-
-	structuredError.rawBody = string(body)
-	structuredError.StatusCode = resp.StatusCode
-	structuredError.Request = resp.Request
-
-	return structuredError
+	return nil
 }
 
-func retryError(resp *http.Response) error {
-	b, err := io.ReadAll(io.LimitReader(resp.Body, maxErrorBodySize))
-	if err != nil {
-		return err
-	}
+// This can fail if e.g. the response body is not valid JSON. That's fine,
+// we'll construct an appropriate error string from the body and status code.
 
-	// Restore the body so that a subsequent CheckError call (after the
-	// retry loop exhausts its retries) can still read and parse the
-	// structured registry error from the response.
-	resp.Body = io.NopCloser(bytes.NewReader(b))
+func retryError(resp *http.Response) error { _ = "STUB: not implemented"; return nil }
 
-	rerr := makeError(resp, b)
-	rerr.temporary = true
-	return rerr
-}
+// Restore the body so that a subsequent CheckError call (after the
+// retry loop exhausts its retries) can still read and parse the
+// structured registry error from the response.

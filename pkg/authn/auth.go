@@ -21,10 +21,10 @@ type auth struct {
 
 // FromConfig returns an Authenticator that just returns the given AuthConfig.
 func FromConfig(cfg AuthConfig) Authenticator {
-	return &auth{cfg}
+	_ = "STUB: not implemented"
+
+	// Authorization implements Authenticator.
+	return *new(Authenticator)
 }
 
-// Authorization implements Authenticator.
-func (a *auth) Authorization() (*AuthConfig, error) {
-	return &a.config, nil
-}
+func (a *auth) Authorization() (*AuthConfig, error) { _ = "STUB: not implemented"; return nil, nil }

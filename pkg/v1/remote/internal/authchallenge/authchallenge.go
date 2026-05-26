@@ -76,107 +76,23 @@ type Challenge struct {
 // ResponseChallenges returns a list of authorization challenges
 // for the given http Response. Challenges are only checked if
 // the response status code was a 401.
-func ResponseChallenges(resp *http.Response) []Challenge {
-	if resp.StatusCode == http.StatusUnauthorized {
-		// Parse the WWW-Authenticate Header and store the challenges
-		// on this endpoint object.
-		return parseAuthHeader(resp.Header)
-	}
+func ResponseChallenges(resp *http.Response) []Challenge { _ = "STUB: not implemented"; return nil }
 
-	return nil
-}
+// Parse the WWW-Authenticate Header and store the challenges
+// on this endpoint object.
 
-func parseAuthHeader(header http.Header) []Challenge {
-	challenges := []Challenge{}
-	for _, h := range header[http.CanonicalHeaderKey("WWW-Authenticate")] {
-		v, p := parseValueAndParams(h)
-		if v != "" {
-			challenges = append(challenges, Challenge{Scheme: v, Parameters: p})
-		}
-	}
-	return challenges
-}
+func parseAuthHeader(header http.Header) []Challenge { _ = "STUB: not implemented"; return nil }
 
 func parseValueAndParams(header string) (value string, params map[string]string) {
-	params = make(map[string]string)
-	value, s := expectToken(header)
-	if value == "" {
-		return
-	}
-	value = strings.ToLower(value)
-	s = "," + skipSpace(s)
-	for strings.HasPrefix(s, ",") {
-		var pkey string
-		pkey, s = expectToken(skipSpace(s[1:]))
-		if pkey == "" {
-			return
-		}
-		if !strings.HasPrefix(s, "=") {
-			return
-		}
-		var pvalue string
-		pvalue, s = expectTokenOrQuoted(s[1:])
-		if pvalue == "" {
-			return
-		}
-		pkey = strings.ToLower(pkey)
-		params[pkey] = pvalue
-		s = skipSpace(s)
-	}
-	return
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
-func skipSpace(s string) (rest string) {
-	i := 0
-	for ; i < len(s); i++ {
-		if octetTypes[s[i]]&isSpace == 0 {
-			break
-		}
-	}
-	return s[i:]
-}
+func skipSpace(s string) (rest string) { _ = "STUB: not implemented"; return "" }
 
-func expectToken(s string) (token, rest string) {
-	i := 0
-	for ; i < len(s); i++ {
-		if octetTypes[s[i]]&isToken == 0 {
-			break
-		}
-	}
-	return s[:i], s[i:]
-}
+func expectToken(s string) (token, rest string) { _ = "STUB: not implemented"; return "", "" }
 
 func expectTokenOrQuoted(s string) (value string, rest string) {
-	if !strings.HasPrefix(s, "\"") {
-		return expectToken(s)
-	}
-	s = s[1:]
-	for i := 0; i < len(s); i++ {
-		switch s[i] {
-		case '"':
-			return s[:i], s[i+1:]
-		case '\\':
-			p := make([]byte, len(s)-1)
-			j := copy(p, s[:i])
-			escape := true
-			for i = i + 1; i < len(s); i++ {
-				b := s[i]
-				switch {
-				case escape:
-					escape = false
-					p[j] = b
-					j++
-				case b == '\\':
-					escape = true
-				case b == '"':
-					return string(p[:j]), s[i+1:]
-				default:
-					p[j] = b
-					j++
-				}
-			}
-			return "", ""
-		}
-	}
+	_ = "STUB: not implemented"
 	return "", ""
 }

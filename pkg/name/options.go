@@ -32,16 +32,7 @@ type options struct {
 	defaultTag      string
 }
 
-func makeOptions(opts ...Option) options {
-	opt := options{
-		defaultRegistry: DefaultRegistry,
-		defaultTag:      DefaultTag,
-	}
-	for _, o := range opts {
-		o(&opt)
-	}
-	return opt
-}
+func makeOptions(opts ...Option) options { _ = "STUB: not implemented"; return *new(options) }
 
 // Option is a functional option for name parsing.
 type Option func(*options)
@@ -50,34 +41,24 @@ type Option func(*options)
 // specified; i.e. no defaulting for registry (dockerhub), repo (library),
 // or tag (latest).
 func StrictValidation(opts *options) {
-	opts.strict = true
+	_ = "STUB: not implemented"
+
+	// WeakValidation is an Option that sets defaults when parsing names, see
+	// StrictValidation.
+	return
 }
 
-// WeakValidation is an Option that sets defaults when parsing names, see
-// StrictValidation.
-func WeakValidation(opts *options) {
-	opts.strict = false
-}
+func WeakValidation(opts *options) { _ = "STUB: not implemented"; return }
 
 // Insecure is an Option that allows image references to be fetched without TLS.
-func Insecure(opts *options) {
-	opts.insecure = true
-}
+func Insecure(opts *options) { _ = "STUB: not implemented"; return }
 
 // OptionFn is a function that returns an option.
 type OptionFn func() Option
 
 // WithDefaultRegistry sets the default registry that will be used if one is not
 // provided.
-func WithDefaultRegistry(r string) Option {
-	return func(opts *options) {
-		opts.defaultRegistry = r
-	}
-}
+func WithDefaultRegistry(r string) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithDefaultTag sets the default tag that will be used if one is not provided.
-func WithDefaultTag(t string) Option {
-	return func(opts *options) {
-		opts.defaultTag = t
-	}
-}
+func WithDefaultTag(t string) Option { _ = "STUB: not implemented"; return *new(Option) }

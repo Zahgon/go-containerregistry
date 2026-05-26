@@ -33,12 +33,10 @@ type schemeTransport struct {
 
 // RoundTrip implements http.RoundTripper
 func (st *schemeTransport) RoundTrip(in *http.Request) (*http.Response, error) {
+	_ = "STUB: not implemented"
 	// When we ping() the registry, we determine whether to use http or https
 	// based on which scheme was successful. That is only valid for the
 	// registry server and not e.g. a separate token server or blob storage,
 	// so we should only override the scheme if the host is the registry.
-	if matchesHost(st.registry.String(), in, st.scheme) {
-		in.URL.Scheme = st.scheme
-	}
-	return st.inner.RoundTrip(in)
+	return nil, nil
 }

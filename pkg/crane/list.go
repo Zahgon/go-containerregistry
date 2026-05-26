@@ -14,20 +14,8 @@
 
 package crane
 
-import (
-	"fmt"
-
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
-)
-
 // ListTags returns the tags in repository src.
 func ListTags(src string, opt ...Option) ([]string, error) {
-	o := makeOptions(opt...)
-	repo, err := name.NewRepository(src, o.Name...)
-	if err != nil {
-		return nil, fmt.Errorf("parsing repo %q: %w", src, err)
-	}
-
-	return remote.List(repo, o.Remote...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }

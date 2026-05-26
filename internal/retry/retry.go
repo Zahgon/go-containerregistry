@@ -18,8 +18,6 @@ package retry
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	"github.com/google/go-containerregistry/internal/retry/wait"
 )
@@ -36,45 +34,24 @@ type temporary interface {
 }
 
 // IsTemporary returns true if err implements Temporary() and it returns true.
-func IsTemporary(err error) bool {
-	if errors.Is(err, context.DeadlineExceeded) {
-		return false
-	}
-	if te, ok := err.(temporary); ok && te.Temporary() {
-		return true
-	}
-	return false
-}
+func IsTemporary(err error) bool { _ = "STUB: not implemented"; return false }
 
 // IsNotNil returns true if err is not nil.
 func IsNotNil(err error) bool {
-	return err != nil
+	_ = "STUB: not implemented"
+
+	// Predicate determines whether an error should be retried.
+	return false
 }
 
-// Predicate determines whether an error should be retried.
 type Predicate func(error) (retry bool)
 
 // Retry retries a given function, f, until a predicate is satisfied, using
 // exponential backoff. If the predicate is never satisfied, it will return the
 // last error returned by f.
 func Retry(f func() error, p Predicate, backoff wait.Backoff) (err error) {
-	if f == nil {
-		return fmt.Errorf("nil f passed to retry")
-	}
-	if p == nil {
-		return fmt.Errorf("nil p passed to retry")
-	}
-
-	condition := func() (bool, error) {
-		err = f()
-		if p(err) {
-			return false, nil
-		}
-		return true, err
-	}
-
-	wait.ExponentialBackoff(backoff, condition)
-	return
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type contextKey string
@@ -85,10 +62,9 @@ var key = contextKey("never")
 // This is a hack and can be used to communicate across package boundaries
 // to avoid retry amplification.
 func Never(ctx context.Context) context.Context {
-	return context.WithValue(ctx, key, true)
+	_ = "STUB: not implemented"
+	return *new(context.Context)
 }
 
 // Ever returns true if the context was wrapped by Never.
-func Ever(ctx context.Context) bool {
-	return ctx.Value(key) == nil
-}
+func Ever(ctx context.Context) bool { _ = "STUB: not implemented"; return false }

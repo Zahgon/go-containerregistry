@@ -15,10 +15,4 @@
 package crane
 
 // Config returns the config file for the remote image ref.
-func Config(ref string, opt ...Option) ([]byte, error) {
-	i, _, err := getImage(ref, opt...)
-	if err != nil {
-		return nil, err
-	}
-	return i.RawConfigFile()
-}
+func Config(ref string, opt ...Option) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }

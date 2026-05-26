@@ -15,74 +15,21 @@
 package daemon
 
 import (
-	"fmt"
-	"io"
-
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/tarball"
-	"github.com/moby/moby/client"
 )
 
 // Tag adds a tag to an already existent image.
-func Tag(src, dest name.Tag, options ...Option) error {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return err
-	}
-
-	_, err = o.client.ImageTag(o.ctx, client.ImageTagOptions{
-		Source: src.String(),
-		Target: dest.String(),
-	})
-	return err
-}
+func Tag(src, dest name.Tag, options ...Option) error { _ = "STUB: not implemented"; return nil }
 
 // Write saves the image into the daemon as the given tag.
 func Write(tag name.Tag, img v1.Image, options ...Option) (string, error) {
-	o, err := makeOptions(options...)
-	if err != nil {
-		return "", err
-	}
-
-	// If we already have this image by this image ID, we can skip loading it.
-	id, err := img.ConfigName()
-	if err != nil {
-		return "", fmt.Errorf("computing image ID: %w", err)
-	}
-	if resp, err := o.client.ImageInspect(o.ctx, id.String()); err == nil {
-		want := tag.String()
-
-		// If we already have this tag, we can skip tagging it.
-		for _, have := range resp.RepoTags {
-			if have == want {
-				return "", nil
-			}
-		}
-
-		_, err = o.client.ImageTag(o.ctx, client.ImageTagOptions{
-			Source: id.String(),
-			Target: want,
-		})
-
-		return "", err
-	}
-
-	pr, pw := io.Pipe()
-	go func() {
-		_ = pw.CloseWithError(tarball.Write(tag, img, pw))
-	}()
-
-	// write the image in docker save format first, then load it
-	resp, err := o.client.ImageLoad(o.ctx, pr, client.ImageLoadWithQuiet(false))
-	if err != nil {
-		return "", fmt.Errorf("error loading image: %w", err)
-	}
-	defer resp.Close()
-	b, err := io.ReadAll(resp)
-	response := string(b)
-	if err != nil {
-		return response, fmt.Errorf("error reading load response body: %w", err)
-	}
-	return response, nil
+	_ = "STUB: not implemented"
+	return "", nil
 }
+
+// If we already have this image by this image ID, we can skip loading it.
+
+// If we already have this tag, we can skip tagging it.
+
+// write the image in docker save format first, then load it

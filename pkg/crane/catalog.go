@@ -14,22 +14,11 @@
 
 package crane
 
-import (
-	"context"
-
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
-)
-
 // Catalog returns the repositories in a registry's catalog.
 func Catalog(src string, opt ...Option) (res []string, err error) {
-	o := makeOptions(opt...)
-	reg, err := name.NewRegistry(src, o.Name...)
-	if err != nil {
-		return nil, err
-	}
-
-	// This context gets overridden by remote.WithContext, which is set by
-	// crane.WithContext.
-	return remote.Catalog(context.Background(), reg, o.Remote...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// This context gets overridden by remote.WithContext, which is set by
+// crane.WithContext.

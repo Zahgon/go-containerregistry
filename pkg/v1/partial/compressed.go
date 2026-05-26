@@ -17,11 +17,6 @@ package partial
 import (
 	"io"
 
-	"github.com/google/go-containerregistry/internal/and"
-	"github.com/google/go-containerregistry/internal/compression"
-	"github.com/google/go-containerregistry/internal/gzip"
-	"github.com/google/go-containerregistry/internal/zstd"
-	comp "github.com/google/go-containerregistry/pkg/compression"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
@@ -49,53 +44,26 @@ type compressedLayerExtender struct {
 
 // Uncompressed implements v1.Layer
 func (cle *compressedLayerExtender) Uncompressed() (io.ReadCloser, error) {
-	rc, err := cle.Compressed()
-	if err != nil {
-		return nil, err
-	}
-
-	// Often, the "compressed" bytes are not actually-compressed.
-	// Peek at the first two bytes to determine whether it's correct to
-	// wrap this with gzip.UnzipReadCloser or zstd.UnzipReadCloser.
-	cp, pr, err := compression.PeekCompression(rc)
-	if err != nil {
-		return nil, err
-	}
-
-	prc := &and.ReadCloser{
-		Reader:    pr,
-		CloseFunc: rc.Close,
-	}
-
-	switch cp {
-	case comp.GZip:
-		return gzip.UnzipReadCloser(prc)
-	case comp.ZStd:
-		return zstd.UnzipReadCloser(prc)
-	default:
-		return prc, nil
-	}
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
+
+// Often, the "compressed" bytes are not actually-compressed.
+// Peek at the first two bytes to determine whether it's correct to
+// wrap this with gzip.UnzipReadCloser or zstd.UnzipReadCloser.
 
 // DiffID implements v1.Layer
 func (cle *compressedLayerExtender) DiffID() (v1.Hash, error) {
+	_ = "STUB: not implemented"
 	// If our nested CompressedLayer implements DiffID,
 	// then delegate to it instead.
-	if wdi, ok := cle.CompressedLayer.(WithDiffID); ok {
-		return wdi.DiffID()
-	}
-	r, err := cle.Uncompressed()
-	if err != nil {
-		return v1.Hash{}, err
-	}
-	defer r.Close()
-	h, _, err := v1.SHA256(r)
-	return h, err
+	return *new(v1.Hash), nil
 }
 
 // CompressedToLayer fills in the missing methods from a CompressedLayer so that it implements v1.Layer
 func CompressedToLayer(ul CompressedLayer) (v1.Layer, error) {
-	return &compressedLayerExtender{ul}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // CompressedImageCore represents the base minimum interface a natively
@@ -122,67 +90,62 @@ var _ v1.Image = (*compressedImageExtender)(nil)
 
 // Digest implements v1.Image
 func (i *compressedImageExtender) Digest() (v1.Hash, error) {
-	return Digest(i)
+	_ = "STUB: not implemented"
+
+	// ConfigName implements v1.Image
+	return *new(v1.Hash), nil
 }
 
-// ConfigName implements v1.Image
 func (i *compressedImageExtender) ConfigName() (v1.Hash, error) {
-	return ConfigName(i)
+	_ = "STUB: not implemented"
+	return *
+
+	// Layers implements v1.Image
+	new(v1.Hash), nil
 }
 
-// Layers implements v1.Image
 func (i *compressedImageExtender) Layers() ([]v1.Layer, error) {
-	hs, err := FSLayers(i)
-	if err != nil {
-		return nil, err
-	}
-	ls := make([]v1.Layer, 0, len(hs))
-	for _, h := range hs {
-		l, err := i.LayerByDigest(h)
-		if err != nil {
-			return nil, err
-		}
-		ls = append(ls, l)
-	}
-	return ls, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // LayerByDigest implements v1.Image
 func (i *compressedImageExtender) LayerByDigest(h v1.Hash) (v1.Layer, error) {
-	cl, err := i.CompressedImageCore.LayerByDigest(h)
-	if err != nil {
-		return nil, err
-	}
-	return CompressedToLayer(cl)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // LayerByDiffID implements v1.Image
 func (i *compressedImageExtender) LayerByDiffID(h v1.Hash) (v1.Layer, error) {
-	h, err := DiffIDToBlob(i, h)
-	if err != nil {
-		return nil, err
-	}
-	return i.LayerByDigest(h)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // ConfigFile implements v1.Image
 func (i *compressedImageExtender) ConfigFile() (*v1.ConfigFile, error) {
-	return ConfigFile(i)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// Manifest implements v1.Image
+		nil
 }
 
-// Manifest implements v1.Image
 func (i *compressedImageExtender) Manifest() (*v1.Manifest, error) {
-	return Manifest(i)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// Size implements v1.Image
+		nil
 }
 
-// Size implements v1.Image
 func (i *compressedImageExtender) Size() (int64, error) {
-	return Size(i)
+	_ = "STUB: not implemented"
+
+	// CompressedToImage fills in the missing methods from a CompressedImageCore so that it implements v1.Image
+	return 0, nil
 }
 
-// CompressedToImage fills in the missing methods from a CompressedImageCore so that it implements v1.Image
 func CompressedToImage(cic CompressedImageCore) (v1.Image, error) {
-	return &compressedImageExtender{
-		CompressedImageCore: cic,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }

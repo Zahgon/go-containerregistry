@@ -20,7 +20,6 @@ package wait
 
 import (
 	"errors"
-	"math/rand"
 	"time"
 )
 
@@ -30,11 +29,8 @@ import (
 // This allows clients to avoid converging on periodic behavior. If maxFactor
 // is 0.0, a suggested default value will be chosen.
 func Jitter(duration time.Duration, maxFactor float64) time.Duration {
-	if maxFactor <= 0.0 {
-		maxFactor = 1.0
-	}
-	wait := duration + time.Duration(rand.Float64()*maxFactor*float64(duration))
-	return wait
+	_ = "STUB: not implemented"
+	return *new(time.Duration)
 }
 
 // ErrWaitTimeout is returned when the condition exited without success.
@@ -73,31 +69,9 @@ type Backoff struct {
 // Step (1) returns an amount of time to sleep determined by the
 // original Duration and Jitter and (2) mutates the provided Backoff
 // to update its Steps and Duration.
-func (b *Backoff) Step() time.Duration {
-	if b.Steps < 1 {
-		if b.Jitter > 0 {
-			return Jitter(b.Duration, b.Jitter)
-		}
-		return b.Duration
-	}
-	b.Steps--
+func (b *Backoff) Step() time.Duration { _ = "STUB: not implemented"; return *new(time.Duration) }
 
-	duration := b.Duration
-
-	// calculate the next step
-	if b.Factor != 0 {
-		b.Duration = time.Duration(float64(b.Duration) * b.Factor)
-		if b.Cap > 0 && b.Duration > b.Cap {
-			b.Duration = b.Cap
-			b.Steps = 0
-		}
-	}
-
-	if b.Jitter > 0 {
-		duration = Jitter(duration, b.Jitter)
-	}
-	return duration
-}
+// calculate the next step
 
 // ExponentialBackoff repeats a condition check with exponential backoff.
 //
@@ -110,14 +84,6 @@ func (b *Backoff) Step() time.Duration {
 // In case (1) the returned error is what the condition function returned.
 // In all other cases, ErrWaitTimeout is returned.
 func ExponentialBackoff(backoff Backoff, condition ConditionFunc) error {
-	for backoff.Steps > 0 {
-		if ok, err := condition(); err != nil || ok {
-			return err
-		}
-		if backoff.Steps == 1 {
-			break
-		}
-		time.Sleep(backoff.Step())
-	}
-	return ErrWaitTimeout
+	_ = "STUB: not implemented"
+	return nil
 }

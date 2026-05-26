@@ -19,8 +19,11 @@ type anonymous struct{}
 
 // Authorization implements Authenticator.
 func (a *anonymous) Authorization() (*AuthConfig, error) {
-	return &AuthConfig{}, nil
+	_ = "STUB: not implemented"
+	return nil,
+
+		// Anonymous is a singleton Authenticator for providing anonymous auth.
+		nil
 }
 
-// Anonymous is a singleton Authenticator for providing anonymous auth.
 var Anonymous Authenticator = &anonymous{}

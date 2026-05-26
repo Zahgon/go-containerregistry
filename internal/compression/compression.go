@@ -16,12 +16,8 @@
 package compression
 
 import (
-	"bufio"
-	"bytes"
 	"io"
 
-	"github.com/google/go-containerregistry/internal/gzip"
-	"github.com/google/go-containerregistry/internal/zstd"
 	"github.com/google/go-containerregistry/pkg/compression"
 )
 
@@ -30,18 +26,8 @@ type Opener = func() (io.ReadCloser, error)
 
 // GetCompression detects whether an Opener is compressed and which algorithm is used.
 func GetCompression(opener Opener) (compression.Compression, error) {
-	rc, err := opener()
-	if err != nil {
-		return compression.None, err
-	}
-	defer rc.Close()
-
-	cp, _, err := PeekCompression(rc)
-	if err != nil {
-		return compression.None, err
-	}
-
-	return cp, nil
+	_ = "STUB: not implemented"
+	return *new(compression.Compression), nil
 }
 
 // PeekCompression detects whether the input stream is compressed and which algorithm is used.
@@ -50,21 +36,8 @@ func GetCompression(opener Opener) (compression.Compression, error) {
 // of bytes are buffered to Peek at the gzip/zstd header, and the returned
 // PeekReader can be used as a replacement for the consumed input io.Reader.
 func PeekCompression(r io.Reader) (compression.Compression, PeekReader, error) {
-	pr := intoPeekReader(r)
-
-	if isGZip, _, err := checkHeader(pr, gzip.MagicHeader); err != nil {
-		return compression.None, pr, err
-	} else if isGZip {
-		return compression.GZip, pr, nil
-	}
-
-	if isZStd, _, err := checkHeader(pr, zstd.MagicHeader); err != nil {
-		return compression.None, pr, err
-	} else if isZStd {
-		return compression.ZStd, pr, nil
-	}
-
-	return compression.None, pr, nil
+	_ = "STUB: not implemented"
+	return *new(compression.Compression), *new(PeekReader), nil
 }
 
 // PeekReader is an io.Reader that also implements Peek a la bufio.Reader.
@@ -75,23 +48,12 @@ type PeekReader interface {
 
 // IntoPeekReader creates a PeekReader from an io.Reader.
 // If the reader already has a Peek method, it will just return the passed reader.
-func intoPeekReader(r io.Reader) PeekReader {
-	if p, ok := r.(PeekReader); ok {
-		return p
-	}
-
-	return bufio.NewReader(r)
-}
+func intoPeekReader(r io.Reader) PeekReader { _ = "STUB: not implemented"; return *new(PeekReader) }
 
 // CheckHeader checks whether the first bytes from a PeekReader match an expected header
 func checkHeader(pr PeekReader, expectedHeader []byte) (bool, PeekReader, error) {
-	header, err := pr.Peek(len(expectedHeader))
-	if err != nil {
-		// https://github.com/google/go-containerregistry/issues/367
-		if err == io.EOF {
-			return false, pr, nil
-		}
-		return false, pr, err
-	}
-	return bytes.Equal(header, expectedHeader), pr, nil
+	_ = "STUB: not implemented"
+	return false, *new(PeekReader), nil
 }
+
+// https://github.com/google/go-containerregistry/issues/367

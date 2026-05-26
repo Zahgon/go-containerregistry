@@ -15,11 +15,9 @@
 package partial
 
 import (
-	"bytes"
 	"io"
 	"sync"
 
-	"github.com/google/go-containerregistry/internal/gzip"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
@@ -50,40 +48,28 @@ type uncompressedLayerExtender struct {
 
 // Compressed implements v1.Layer
 func (ule *uncompressedLayerExtender) Compressed() (io.ReadCloser, error) {
-	u, err := ule.Uncompressed()
-	if err != nil {
-		return nil, err
-	}
-	return gzip.ReadCloser(u), nil
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // Digest implements v1.Layer
 func (ule *uncompressedLayerExtender) Digest() (v1.Hash, error) {
-	ule.calcSizeHash()
-	return ule.hash, ule.hashSizeError
+	_ = "STUB: not implemented"
+	return *new(v1.Hash), nil
 }
 
 // Size implements v1.Layer
 func (ule *uncompressedLayerExtender) Size() (int64, error) {
-	ule.calcSizeHash()
-	return ule.size, ule.hashSizeError
+	_ = "STUB: not implemented"
+	return 0, nil
 }
 
-func (ule *uncompressedLayerExtender) calcSizeHash() {
-	ule.once.Do(func() {
-		var r io.ReadCloser
-		r, ule.hashSizeError = ule.Compressed()
-		if ule.hashSizeError != nil {
-			return
-		}
-		defer r.Close()
-		ule.hash, ule.size, ule.hashSizeError = v1.SHA256(r)
-	})
-}
+func (ule *uncompressedLayerExtender) calcSizeHash() { _ = "STUB: not implemented"; return }
 
 // UncompressedToLayer fills in the missing methods from an UncompressedLayer so that it implements v1.Layer
 func UncompressedToLayer(ul UncompressedLayer) (v1.Layer, error) {
-	return &uncompressedLayerExtender{UncompressedLayer: ul}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // UncompressedImageCore represents the bare minimum interface a natively
@@ -98,9 +84,8 @@ type UncompressedImageCore interface {
 
 // UncompressedToImage fills in the missing methods from an UncompressedImageCore so that it implements v1.Image.
 func UncompressedToImage(uic UncompressedImageCore) (v1.Image, error) {
-	return &uncompressedImageExtender{
-		UncompressedImageCore: uic,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
 
 // uncompressedImageExtender implements v1.Image by extending UncompressedImageCore with the
@@ -117,107 +102,62 @@ var _ v1.Image = (*uncompressedImageExtender)(nil)
 
 // Digest implements v1.Image
 func (i *uncompressedImageExtender) Digest() (v1.Hash, error) {
-	return Digest(i)
+	_ = "STUB: not implemented"
+
+	// Manifest implements v1.Image
+	return *new(v1.Hash), nil
 }
 
-// Manifest implements v1.Image
 func (i *uncompressedImageExtender) Manifest() (*v1.Manifest, error) {
-	i.lock.Lock()
-	defer i.lock.Unlock()
-	if i.manifest != nil {
-		return i.manifest, nil
-	}
-
-	b, err := i.RawConfigFile()
-	if err != nil {
-		return nil, err
-	}
-
-	cfgHash, cfgSize, err := v1.SHA256(bytes.NewReader(b))
-	if err != nil {
-		return nil, err
-	}
-
-	m := &v1.Manifest{
-		SchemaVersion: 2,
-		MediaType:     types.DockerManifestSchema2,
-		Config: v1.Descriptor{
-			MediaType: types.DockerConfigJSON,
-			Size:      cfgSize,
-			Digest:    cfgHash,
-		},
-	}
-
-	ls, err := i.Layers()
-	if err != nil {
-		return nil, err
-	}
-
-	m.Layers = make([]v1.Descriptor, len(ls))
-	for i, l := range ls {
-		desc, err := Descriptor(l)
-		if err != nil {
-			return nil, err
-		}
-
-		m.Layers[i] = *desc
-	}
-
-	i.manifest = m
-	return i.manifest, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // RawManifest implements v1.Image
 func (i *uncompressedImageExtender) RawManifest() ([]byte, error) {
-	return RawManifest(i)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// Size implements v1.Image
+		nil
 }
 
-// Size implements v1.Image
 func (i *uncompressedImageExtender) Size() (int64, error) {
-	return Size(i)
+	_ = "STUB: not implemented"
+
+	// ConfigName implements v1.Image
+	return 0, nil
 }
 
-// ConfigName implements v1.Image
 func (i *uncompressedImageExtender) ConfigName() (v1.Hash, error) {
-	return ConfigName(i)
+	_ = "STUB: not implemented"
+	return *
+
+	// ConfigFile implements v1.Image
+	new(v1.Hash), nil
 }
 
-// ConfigFile implements v1.Image
 func (i *uncompressedImageExtender) ConfigFile() (*v1.ConfigFile, error) {
-	return ConfigFile(i)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// Layers implements v1.Image
+		nil
 }
 
-// Layers implements v1.Image
 func (i *uncompressedImageExtender) Layers() ([]v1.Layer, error) {
-	diffIDs, err := DiffIDs(i)
-	if err != nil {
-		return nil, err
-	}
-	ls := make([]v1.Layer, 0, len(diffIDs))
-	for _, h := range diffIDs {
-		l, err := i.LayerByDiffID(h)
-		if err != nil {
-			return nil, err
-		}
-		ls = append(ls, l)
-	}
-	return ls, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // LayerByDiffID implements v1.Image
 func (i *uncompressedImageExtender) LayerByDiffID(diffID v1.Hash) (v1.Layer, error) {
-	ul, err := i.UncompressedImageCore.LayerByDiffID(diffID)
-	if err != nil {
-		return nil, err
-	}
-	return UncompressedToLayer(ul)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // LayerByDigest implements v1.Image
 func (i *uncompressedImageExtender) LayerByDigest(h v1.Hash) (v1.Layer, error) {
-	diffID, err := BlobToDiffID(i, h)
-	if err != nil {
-		return nil, err
-	}
-	return i.LayerByDiffID(diffID)
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }

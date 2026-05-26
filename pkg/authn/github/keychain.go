@@ -16,9 +16,6 @@
 package github
 
 import (
-	"net/url"
-	"os"
-
 	"github.com/google/go-containerregistry/pkg/authn"
 )
 
@@ -33,27 +30,13 @@ var Keychain authn.Keychain = githubKeychain{}
 type githubKeychain struct{}
 
 func (githubKeychain) Resolve(r authn.Resource) (authn.Authenticator, error) {
-	serverURL, err := url.Parse("https://" + r.String())
-	if err != nil {
-		return authn.Anonymous, nil
-	}
-	if serverURL.Hostname() == ghcrHostname {
-		username := os.Getenv("GITHUB_ACTOR")
-		if username == "" {
-			username = "unset"
-		}
-		if tok := os.Getenv("GITHUB_TOKEN"); tok != "" {
-			return githubAuthenticator{username, tok}, nil
-		}
-	}
-	return authn.Anonymous, nil
+	_ = "STUB: not implemented"
+	return *new(authn.Authenticator), nil
 }
 
 type githubAuthenticator struct{ username, password string }
 
 func (g githubAuthenticator) Authorization() (*authn.AuthConfig, error) {
-	return &authn.AuthConfig{
-		Username: g.username,
-		Password: g.password,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

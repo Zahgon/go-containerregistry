@@ -14,20 +14,5 @@
 
 package crane
 
-import (
-	"fmt"
-
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
-)
-
 // Delete deletes the remote reference at src.
-func Delete(src string, opt ...Option) error {
-	o := makeOptions(opt...)
-	ref, err := name.ParseReference(src, o.Name...)
-	if err != nil {
-		return fmt.Errorf("parsing reference %q: %w", src, err)
-	}
-
-	return remote.Delete(ref, o.Remote...)
-}
+func Delete(src string, opt ...Option) error { _ = "STUB: not implemented"; return nil }

@@ -15,26 +15,9 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/spf13/cobra"
 )
 
 // NewCmdManifest creates a new cobra.Command for the manifest subcommand.
-func NewCmdManifest(options *[]crane.Option) *cobra.Command {
-	return &cobra.Command{
-		Use:   "manifest IMAGE",
-		Short: "Get the manifest of an image",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			src := args[0]
-			manifest, err := crane.Manifest(src, *options...)
-			if err != nil {
-				return fmt.Errorf("fetching manifest %s: %w", src, err)
-			}
-			fmt.Fprint(cmd.OutOrStdout(), string(manifest))
-			return nil
-		},
-	}
-}
+func NewCmdManifest(options *[]crane.Option) *cobra.Command { _ = "STUB: not implemented"; return nil }

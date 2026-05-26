@@ -14,19 +14,9 @@
 
 package layout
 
-import (
-	"os"
-	"path/filepath"
-)
-
 // FromPath reads an OCI image layout at path and constructs a layout.Path.
 func FromPath(path string) (Path, error) {
+	_ = "STUB: not implemented"
 	// TODO: check oci-layout exists
-
-	_, err := os.Stat(filepath.Join(path, "index.json"))
-	if err != nil {
-		return "", err
-	}
-
-	return Path(path), nil
+	return *new(Path), nil
 }

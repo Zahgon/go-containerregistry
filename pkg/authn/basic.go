@@ -21,9 +21,4 @@ type Basic struct {
 }
 
 // Authorization implements Authenticator.
-func (b *Basic) Authorization() (*AuthConfig, error) {
-	return &AuthConfig{
-		Username: b.Username,
-		Password: b.Password,
-	}, nil
-}
+func (b *Basic) Authorization() (*AuthConfig, error) { _ = "STUB: not implemented"; return nil, nil }

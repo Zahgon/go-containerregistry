@@ -15,11 +15,7 @@
 package empty
 
 import (
-	"encoding/json"
-	"errors"
-
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
 
@@ -29,37 +25,29 @@ var Index = emptyIndex{}
 type emptyIndex struct{}
 
 func (i emptyIndex) MediaType() (types.MediaType, error) {
-	return types.OCIImageIndex, nil
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }
 
-func (i emptyIndex) Digest() (v1.Hash, error) {
-	return partial.Digest(i)
-}
+func (i emptyIndex) Digest() (v1.Hash, error) { _ = "STUB: not implemented"; return *new(v1.Hash), nil }
 
-func (i emptyIndex) Size() (int64, error) {
-	return partial.Size(i)
-}
+func (i emptyIndex) Size() (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 func (i emptyIndex) IndexManifest() (*v1.IndexManifest, error) {
-	return base(), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (i emptyIndex) RawManifest() ([]byte, error) {
-	return json.Marshal(base())
-}
+func (i emptyIndex) RawManifest() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (i emptyIndex) Image(v1.Hash) (v1.Image, error) {
-	return nil, errors.New("empty index")
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
 
 func (i emptyIndex) ImageIndex(v1.Hash) (v1.ImageIndex, error) {
-	return nil, errors.New("empty index")
+	_ = "STUB: not implemented"
+	return *new(v1.ImageIndex), nil
 }
 
-func base() *v1.IndexManifest {
-	return &v1.IndexManifest{
-		SchemaVersion: 2,
-		MediaType:     types.OCIImageIndex,
-		Manifests:     []v1.Descriptor{},
-	}
-}
+func base() *v1.IndexManifest { _ = "STUB: not implemented"; return nil }

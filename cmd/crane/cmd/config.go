@@ -15,25 +15,9 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/spf13/cobra"
 )
 
 // NewCmdConfig creates a new cobra.Command for the config subcommand.
-func NewCmdConfig(options *[]crane.Option) *cobra.Command {
-	return &cobra.Command{
-		Use:   "config IMAGE",
-		Short: "Get the config of an image",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := crane.Config(args[0], *options...)
-			if err != nil {
-				return fmt.Errorf("fetching config: %w", err)
-			}
-			fmt.Fprint(cmd.OutOrStdout(), string(cfg))
-			return nil
-		},
-	}
-}
+func NewCmdConfig(options *[]crane.Option) *cobra.Command { _ = "STUB: not implemented"; return nil }

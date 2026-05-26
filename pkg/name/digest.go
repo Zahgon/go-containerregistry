@@ -19,9 +19,6 @@ import (
 	_ "crypto/sha256" // Recommended by go-digest.
 	"encoding"
 	"encoding/json"
-	"strings"
-
-	"github.com/opencontainers/go-digest"
 )
 
 const digestDelim = "@"
@@ -41,93 +38,47 @@ var _ json.Unmarshaler = (*Digest)(nil)
 
 // Context implements Reference.
 func (d Digest) Context() Repository {
-	return d.Repository
+	_ = "STUB: not implemented"
+	return *
+
+	// Identifier implements Reference.
+	new(Repository)
 }
 
-// Identifier implements Reference.
-func (d Digest) Identifier() string {
-	return d.DigestStr()
-}
+func (d Digest) Identifier() string { _ = "STUB: not implemented"; return "" }
 
 // DigestStr returns the digest component of the Digest.
 func (d Digest) DigestStr() string {
-	return d.digest
+	_ = "STUB: not implemented"
+
+	// Name returns the name from which the Digest was derived.
+	return ""
 }
 
-// Name returns the name from which the Digest was derived.
-func (d Digest) Name() string {
-	return d.Repository.Name() + digestDelim + d.DigestStr()
-}
+func (d Digest) Name() string { _ = "STUB: not implemented"; return "" }
 
 // String returns the original input string.
 func (d Digest) String() string {
-	return d.original
+	_ = "STUB: not implemented"
+
+	// MarshalJSON formats the digest into a string for JSON serialization.
+	return ""
 }
 
-// MarshalJSON formats the digest into a string for JSON serialization.
-func (d Digest) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.String())
-}
+func (d Digest) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalJSON parses a JSON string into a Digest.
-func (d *Digest) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
-	}
-	n, err := NewDigest(s)
-	if err != nil {
-		return err
-	}
-	*d = n
-	return nil
-}
+func (d *Digest) UnmarshalJSON(data []byte) error { _ = "STUB: not implemented"; return nil }
 
 // MarshalText formats the digest into a string for text serialization.
-func (d Digest) MarshalText() ([]byte, error) {
-	return []byte(d.String()), nil
-}
+func (d Digest) MarshalText() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalText parses a text string into a Digest.
-func (d *Digest) UnmarshalText(data []byte) error {
-	n, err := NewDigest(string(data))
-	if err != nil {
-		return err
-	}
-	*d = n
-	return nil
-}
+func (d *Digest) UnmarshalText(data []byte) error { _ = "STUB: not implemented"; return nil }
 
 // NewDigest returns a new Digest representing the given name.
 func NewDigest(name string, opts ...Option) (Digest, error) {
+	_ = "STUB: not implemented"
 	// Split on "@"
-	parts := strings.Split(name, digestDelim)
-	if len(parts) != 2 {
-		return Digest{}, newErrBadName("a digest must contain exactly one '@' separator (e.g. registry/repository@digest) saw: %s", name)
-	}
-	base := parts[0]
-	dig := parts[1]
-	prefix := digest.Canonical.String() + ":"
-	if !strings.HasPrefix(dig, prefix) {
-		return Digest{}, newErrBadName("unsupported digest algorithm: %s", dig)
-	}
-	hex := strings.TrimPrefix(dig, prefix)
-	if err := digest.Canonical.Validate(hex); err != nil {
-		return Digest{}, err
-	}
-
-	tag, err := NewTag(base, opts...)
-	if err == nil {
-		base = tag.Repository.Name()
-	}
-
-	repo, err := NewRepository(base, opts...)
-	if err != nil {
-		return Digest{}, err
-	}
-	return Digest{
-		Repository: repo,
-		digest:     dig,
-		original:   name,
-	}, nil
+	return *new(Digest), nil
 }

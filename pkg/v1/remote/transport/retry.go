@@ -52,60 +52,24 @@ type options struct {
 type Backoff = retry.Backoff
 
 // WithRetryBackoff sets the backoff for retry operations.
-func WithRetryBackoff(backoff Backoff) Option {
-	return func(o *options) {
-		o.backoff = backoff
-	}
-}
+func WithRetryBackoff(backoff Backoff) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // WithRetryPredicate sets the predicate for retry operations.
 func WithRetryPredicate(predicate func(error) bool) Option {
-	return func(o *options) {
-		o.predicate = predicate
-	}
+	_ = "STUB: not implemented"
+	return *new(Option)
 }
 
 // WithRetryStatusCodes sets which http response codes will be retried.
-func WithRetryStatusCodes(codes ...int) Option {
-	return func(o *options) {
-		o.codes = codes
-	}
-}
+func WithRetryStatusCodes(codes ...int) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // NewRetry returns a transport that retries errors.
 func NewRetry(inner http.RoundTripper, opts ...Option) http.RoundTripper {
-	o := &options{
-		backoff:   defaultBackoff,
-		predicate: retry.IsTemporary,
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
-
-	return &retryTransport{
-		inner:     inner,
-		backoff:   o.backoff,
-		predicate: o.predicate,
-		codes:     o.codes,
-	}
+	_ = "STUB: not implemented"
+	return *new(http.RoundTripper)
 }
 
 func (t *retryTransport) RoundTrip(in *http.Request) (out *http.Response, err error) {
-	roundtrip := func() error {
-		out, err = t.inner.RoundTrip(in)
-		if !retry.Ever(in.Context()) {
-			return nil
-		}
-		if out != nil {
-			for _, code := range t.codes {
-				if out.StatusCode == code {
-					return retryError(out)
-				}
-			}
-		}
-		return err
-	}
-	retry.Retry(roundtrip, t.predicate, t.backoff)
-	return
+	_ = "STUB: not implemented"
+	return nil, nil
 }

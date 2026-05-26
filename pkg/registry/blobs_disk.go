@@ -16,11 +16,7 @@ package registry
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 )
@@ -29,53 +25,31 @@ type diskHandler struct {
 	dir string
 }
 
-func NewDiskBlobHandler(dir string) BlobHandler { return &diskHandler{dir: dir} }
-
-func (m *diskHandler) blobHashPath(h v1.Hash) string {
-	return filepath.Join(m.dir, h.Algorithm, h.Hex)
+func NewDiskBlobHandler(dir string) BlobHandler {
+	_ = "STUB: not implemented"
+	return *new(BlobHandler)
 }
+
+func (m *diskHandler) blobHashPath(h v1.Hash) string { _ = "STUB: not implemented"; return "" }
 
 func (m *diskHandler) Stat(_ context.Context, _ string, h v1.Hash) (int64, error) {
-	f, err := os.Open(m.blobHashPath(h))
-	if errors.Is(err, os.ErrNotExist) {
-		return 0, errNotFound
-	} else if err != nil {
-		return 0, err
-	}
-	defer f.Close()
+	_ = "STUB: not implemented"
+	return 0, nil
+}
 
-	got, size, err := v1.SHA256(f)
-	if err != nil {
-		return 0, err
-	}
-	if got != h {
-		return 0, fmt.Errorf("%w: blob %s has digest %s", errNotFound, h, got)
-	}
-	return size, nil
-}
 func (m *diskHandler) Get(_ context.Context, _ string, h v1.Hash) (io.ReadCloser, error) {
-	return os.Open(m.blobHashPath(h))
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
+
 func (m *diskHandler) Put(_ context.Context, _ string, h v1.Hash, rc io.ReadCloser) error {
+	_ = "STUB: not implemented"
 	// Put the temp file in the same directory to avoid cross-device problems
 	// during the os.Rename.  The filenames cannot conflict.
-	f, err := os.CreateTemp(m.dir, "upload-*")
-	if err != nil {
-		return err
-	}
-
-	if err := func() error {
-		defer f.Close()
-		_, err := io.Copy(f, rc)
-		return err
-	}(); err != nil {
-		return err
-	}
-	if err := os.MkdirAll(filepath.Join(m.dir, h.Algorithm), os.ModePerm); err != nil {
-		return err
-	}
-	return os.Rename(f.Name(), m.blobHashPath(h))
+	return nil
 }
+
 func (m *diskHandler) Delete(_ context.Context, _ string, h v1.Hash) error {
-	return os.Remove(m.blobHashPath(h))
+	_ = "STUB: not implemented"
+	return nil
 }

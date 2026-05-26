@@ -17,7 +17,6 @@ package remote
 import (
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/partial"
 )
 
 // MountableLayer wraps a v1.Layer in a shim that enables the layer to be
@@ -31,13 +30,12 @@ type MountableLayer struct {
 // Descriptor retains the original descriptor from an image manifest.
 // See partial.Descriptor.
 func (ml *MountableLayer) Descriptor() (*v1.Descriptor, error) {
-	return partial.Descriptor(ml.Layer)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Exists is a hack. See partial.Exists.
-func (ml *MountableLayer) Exists() (bool, error) {
-	return partial.Exists(ml.Layer)
-}
+func (ml *MountableLayer) Exists() (bool, error) { _ = "STUB: not implemented"; return false, nil }
 
 // mountableImage wraps the v1.Layer references returned by the embedded v1.Image
 // in MountableLayer's so that remote.Write might attempt to mount them from their
@@ -49,60 +47,30 @@ type mountableImage struct {
 }
 
 // Layers implements v1.Image
-func (mi *mountableImage) Layers() ([]v1.Layer, error) {
-	ls, err := mi.Image.Layers()
-	if err != nil {
-		return nil, err
-	}
-	mls := make([]v1.Layer, 0, len(ls))
-	for _, l := range ls {
-		mls = append(mls, &MountableLayer{
-			Layer:     l,
-			Reference: mi.Reference,
-		})
-	}
-	return mls, nil
-}
+func (mi *mountableImage) Layers() ([]v1.Layer, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // LayerByDigest implements v1.Image
 func (mi *mountableImage) LayerByDigest(d v1.Hash) (v1.Layer, error) {
-	l, err := mi.Image.LayerByDigest(d)
-	if err != nil {
-		return nil, err
-	}
-	return &MountableLayer{
-		Layer:     l,
-		Reference: mi.Reference,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // LayerByDiffID implements v1.Image
 func (mi *mountableImage) LayerByDiffID(d v1.Hash) (v1.Layer, error) {
-	l, err := mi.Image.LayerByDiffID(d)
-	if err != nil {
-		return nil, err
-	}
-	return &MountableLayer{
-		Layer:     l,
-		Reference: mi.Reference,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
 
 // Descriptor retains the original descriptor from an index manifest.
 // See partial.Descriptor.
 func (mi *mountableImage) Descriptor() (*v1.Descriptor, error) {
-	return partial.Descriptor(mi.Image)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // ConfigLayer retains the original reference so that it can be mounted.
 // See partial.ConfigLayer.
 func (mi *mountableImage) ConfigLayer() (v1.Layer, error) {
-	l, err := partial.ConfigLayer(mi.Image)
-	if err != nil {
-		return nil, err
-	}
-	return &MountableLayer{
-		Layer:     l,
-		Reference: mi.Reference,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }

@@ -15,17 +15,9 @@
 package random
 
 import (
-	"archive/tar"
-	"bytes"
-	"crypto"
-	"encoding/hex"
-	"fmt"
 	"io"
-	"math/rand"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/empty"
-	"github.com/google/go-containerregistry/pkg/v1/mutate"
 	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
@@ -39,78 +31,40 @@ type uncompressedLayer struct {
 
 // DiffID implements partial.UncompressedLayer
 func (ul *uncompressedLayer) DiffID() (v1.Hash, error) {
-	return ul.diffID, nil
+	_ = "STUB: not implemented"
+	return *
+
+	// Uncompressed implements partial.UncompressedLayer
+	new(v1.Hash), nil
 }
 
-// Uncompressed implements partial.UncompressedLayer
 func (ul *uncompressedLayer) Uncompressed() (io.ReadCloser, error) {
-	return io.NopCloser(bytes.NewBuffer(ul.content)), nil
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 // MediaType returns the media type of the layer
 func (ul *uncompressedLayer) MediaType() (types.MediaType, error) {
-	return ul.mediaType, nil
+	_ = "STUB: not implemented"
+	return *new(types.MediaType), nil
 }
 
 var _ partial.UncompressedLayer = (*uncompressedLayer)(nil)
 
 // Image returns a pseudo-randomly generated Image.
 func Image(byteSize, layers int64, options ...Option) (v1.Image, error) {
-	adds := make([]mutate.Addendum, 0, 5)
-	for i := int64(0); i < layers; i++ {
-		layer, err := Layer(byteSize, types.DockerLayer, options...)
-		if err != nil {
-			return nil, err
-		}
-		adds = append(adds, mutate.Addendum{
-			Layer: layer,
-			History: v1.History{
-				Author:    "random.Image",
-				Comment:   fmt.Sprintf("this is a random history %d of %d", i, layers),
-				CreatedBy: "random",
-			},
-		})
-	}
-
-	return mutate.Append(empty.Image, adds...)
+	_ = "STUB: not implemented"
+	return *new(v1.Image), nil
 }
 
 // Layer returns a layer with pseudo-randomly generated content.
 func Layer(byteSize int64, mt types.MediaType, options ...Option) (v1.Layer, error) {
-	o := getOptions(options)
-	rng := rand.New(o.source) //nolint:gosec
-
-	fileName := fmt.Sprintf("random_file_%d.txt", rng.Int())
-
-	// Hash the contents as we write it out to the buffer.
-	var b bytes.Buffer
-	hasher := crypto.SHA256.New()
-	mw := io.MultiWriter(&b, hasher)
-
-	// Write a single file with a random name and random contents.
-	tw := tar.NewWriter(mw)
-	if err := tw.WriteHeader(&tar.Header{
-		Name:     fileName,
-		Size:     byteSize,
-		Typeflag: tar.TypeReg,
-	}); err != nil {
-		return nil, err
-	}
-	if _, err := io.CopyN(tw, rng, byteSize); err != nil {
-		return nil, err
-	}
-	if err := tw.Close(); err != nil {
-		return nil, err
-	}
-
-	h := v1.Hash{
-		Algorithm: "sha256",
-		Hex:       hex.EncodeToString(hasher.Sum(make([]byte, 0, hasher.Size()))),
-	}
-
-	return partial.UncompressedToLayer(&uncompressedLayer{
-		diffID:    h,
-		mediaType: mt,
-		content:   b.Bytes(),
-	})
+	_ = "STUB: not implemented"
+	return *new(v1.Layer), nil
 }
+
+//nolint:gosec
+
+// Hash the contents as we write it out to the buffer.
+
+// Write a single file with a random name and random contents.

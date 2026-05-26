@@ -15,7 +15,6 @@
 package v1
 
 import (
-	"encoding/json"
 	"io"
 	"time"
 )
@@ -43,18 +42,7 @@ type ConfigFile struct {
 }
 
 // Platform attempts to generates a Platform from the ConfigFile fields.
-func (cf *ConfigFile) Platform() *Platform {
-	if cf.OS == "" && cf.Architecture == "" && cf.OSVersion == "" && cf.Variant == "" && len(cf.OSFeatures) == 0 {
-		return nil
-	}
-	return &Platform{
-		OS:           cf.OS,
-		Architecture: cf.Architecture,
-		OSVersion:    cf.OSVersion,
-		Variant:      cf.Variant,
-		OSFeatures:   cf.OSFeatures,
-	}
-}
+func (cf *ConfigFile) Platform() *Platform { _ = "STUB: not implemented"; return nil }
 
 // History is one entry of a list recording how this container image was built.
 type History struct {
@@ -74,11 +62,13 @@ type Time struct {
 // type is effectively immutable in the time API, so it is safe to
 // copy-by-assign, despite the presence of (unexported) Pointer fields.
 func (t *Time) DeepCopyInto(out *Time) {
-	*out = *t
+	_ = "STUB: not implemented"
+
+	// RootFS holds the ordered list of file system deltas that comprise the
+	// container image's root filesystem.
+	return
 }
 
-// RootFS holds the ordered list of file system deltas that comprise the
-// container image's root filesystem.
 type RootFS struct {
 	Type    string `json:"type"`
 	DiffIDs []Hash `json:"diff_ids"`
@@ -143,10 +133,4 @@ type Config struct {
 }
 
 // ParseConfigFile parses the io.Reader's contents into a ConfigFile.
-func ParseConfigFile(r io.Reader) (*ConfigFile, error) {
-	cf := ConfigFile{}
-	if err := json.NewDecoder(r).Decode(&cf); err != nil {
-		return nil, err
-	}
-	return &cf, nil
-}
+func ParseConfigFile(r io.Reader) (*ConfigFile, error) { _ = "STUB: not implemented"; return nil, nil }

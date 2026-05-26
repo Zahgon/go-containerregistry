@@ -14,26 +14,5 @@
 
 package crane
 
-import (
-	"fmt"
-
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
-)
-
 // Tag adds tag to the remote img.
-func Tag(img, tag string, opt ...Option) error {
-	o := makeOptions(opt...)
-	ref, err := name.ParseReference(img, o.Name...)
-	if err != nil {
-		return fmt.Errorf("parsing reference %q: %w", img, err)
-	}
-	desc, err := remote.Get(ref, o.Remote...)
-	if err != nil {
-		return fmt.Errorf("fetching %q: %w", img, err)
-	}
-
-	dst := ref.Context().Tag(tag)
-
-	return remote.Tag(dst, desc, o.Remote...)
-}
+func Tag(img, tag string, opt ...Option) error { _ = "STUB: not implemented"; return nil }
